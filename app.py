@@ -14,6 +14,7 @@ from flask import render_template, redirect, url_for, flash
 from datetime import datetime
 from wtforms import SelectField
 from flask import render_template, request
+from sqlalchemy.orm import joinedload
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
@@ -23,8 +24,6 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 migrate = Migrate(app, db)  # Initialize Flask-Migrate
-
-
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -52,7 +51,10 @@ class Sacco(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(255))
     contact_info = db.Column(db.String(100))
-    vehicles = db.relationship('Vehicle', backref='sacco', lazy=True)
+
+    # Define the bidirectional relationship with Vehicle
+    vehicles = db.relationship('Vehicle', back_populates='sacco', lazy=True)
+
 
 class Vehicle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -60,8 +62,16 @@ class Vehicle(db.Model):
     capacity = db.Column(db.Integer, nullable=False)
     type = db.Column(db.String(50), nullable=False)
     sacco_id = db.Column(db.Integer, db.ForeignKey('sacco.id'), nullable=False)
-    route_id = db.Column(db.Integer, db.ForeignKey('route.id'), nullable=False)  # Add this line
+    route_id = db.Column(db.Integer, db.ForeignKey('route.id'), nullable=False)
+
+    # Define the backref for Ticket relationship
     tickets = db.relationship('Ticket', backref='vehicle', lazy=True)
+
+    # Define the backref for Route relationship
+    route = db.relationship('Route', backref='vehicles', lazy=True)
+
+    # Define the bidirectional relationship with Sacco
+    sacco = db.relationship('Sacco', back_populates='vehicles', lazy=True)
 
 
 class Route(db.Model):
@@ -102,7 +112,6 @@ class VehicleForm(FlaskForm):
 
 # ...
 
-
 # Create a form for adding a new Route
 class RouteForm(FlaskForm):
     origin = StringField('Origin', validators=[DataRequired()])
@@ -111,7 +120,10 @@ class RouteForm(FlaskForm):
     duration = StringField('Duration', validators=[DataRequired()])
     submit = SubmitField('Add Route')
 
-
+class RouteSearchForm(FlaskForm):
+    origin = SelectField('Origin', choices=[], coerce=int)
+    destination = SelectField('Destination', choices=[], coerce=int)
+    submit = SubmitField('Search')
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -284,7 +296,10 @@ def view_vehicles_by_sacco(sacco_id):
     saccos = Sacco.query.all()
     return render_template('admin/view_vehicles.html', vehicles=vehicles, saccos=saccos, selected_sacco=sacco)
 
-
+@app.route('/route_list')
+def route_list():
+    routes = Route.query.options(joinedload(Route.vehicles).joinedload(Vehicle.sacco)).all()
+    return render_template('route_list.html', routes=routes)
 
 @app.route('/find_route', methods=['GET', 'POST'])
 def find_route():
@@ -308,6 +323,41 @@ def find_route():
         destination = ''  # Set default values when loading the page
 
     return render_template('find_route.html', routes=routes, all_routes=all_routes, origin=origin, destination=destination)
+
+@app.route('/route/<int:route_id>')
+def route_detail(route_id):
+    route = Route.query.get_or_404(route_id)
+    vehicles = Vehicle.query.filter_by(route_id=route_id).all()
+    return render_template('route_detail.html', route=route, vehicles=vehicles)
+
+@app.route('/search_routes', methods=['GET', 'POST'])
+def search_routes():
+    form = RouteSearchForm()
+
+    # Populate choices for origin and destination from existing routes
+    form.origin.choices = [(route.id, route.origin) for route in Route.query.all()]
+    form.destination.choices = [(route.id, route.destination) for route in Route.query.all()]
+
+    if request.method == 'POST' and form.validate_on_submit():
+        origin_route = Route.query.get(form.origin.data)
+        destination_route = Route.query.get(form.destination.data)
+
+        # Perform the search based on the selected origin and destination routes
+        # You may want to adjust this query based on your specific requirements
+        routes = Route.query.filter_by(origin=origin_route.origin, destination=destination_route.destination).all()
+    else:
+        # If it's a GET request or form not submitted, display all routes
+        routes = Route.query.all()
+
+    return render_template('search_routes.html', form=form, routes=routes)
+
+# Add a new route for booking a vehicle
+@app.route('/route/<int:route_id>/book/<int:vehicle_id>')
+def book_vehicle(route_id, vehicle_id):
+    # You can implement the booking logic here
+    # For demonstration, I'll redirect back to the route detail page
+    flash('Vehicle booked successfully!', 'success')
+    return redirect(url_for('route_detail', route_id=route_id))
 
 if __name__ == '__main__':
     # Create all tables before running the app

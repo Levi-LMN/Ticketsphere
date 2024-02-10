@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Route Detail{% endblock %}
+
+{% block content %}
+    <h1>Route Details</h1>
+    <p>Origin: {{ route.origin }}</p>
+    <p>Destination: {{ route.destination }}</p>
+    <p>Distance: {{ route.distance }}</p>
+    <p>Duration: {{ route.duration }}</p>
+
+    <h2>Vehicles in this Route</h2>
+    <ul>
+        {% for vehicle in vehicles %}
+            <li>
+                Sacco: {{ vehicle.sacco.name }}
+                - Capacity: {{ vehicle.capacity }}
+                - <a href="{{ url_for('book_vehicle', route_id=route.id, vehicle_id=vehicle.id) }}">Book Now</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
