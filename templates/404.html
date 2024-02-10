@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}404 Not Found{% endblock %}
+
+{% block content %}
+    <div class="text-center mt-5">
+        <h1 class="display-4 text-danger">404 <br>Page Not Available</h1>
+        <p class="lead">Sorry, the page you are looking for is not available.</p>
+        <p class="lead">But hey, you can enjoy a new car fact every time you refresh!</p>
+        <div class="car-wrapper mt-4">
+            <p class="fact font-italic text-primary" id="carFact">Loading car fact...</p>
+            <button class="btn btn-primary d-none" id="homeButton">Take me back home!</button>
+        </div>
+    </div>
+    <script>
+        // Function to get a random car fact
+        function getRandomCarFact() {
+            const carFacts = [
+                "The first car race took place in Paris in 1887, and the top speed was 18 km/h.",
+                "The world's first car accident occurred in 1891, and it involved just two vehicles.",
+                "The average car has about 30,000 parts.",
+                "The fastest car in the world is the Bugatti Chiron Super Sport 300+, reaching speeds of 304 mph.",
+                "The Volkswagen Beetle is one of the best-selling cars in history, with over 21 million units sold.",
+            ];
+
+            return carFacts;
+        }
+
+        // Display a random car fact
+        const carFacts = getRandomCarFact();
+        let currentIndex = sessionStorage.getItem('carFactIndex') || 0;
+
+        function displayCarFact() {
+            if (currentIndex < carFacts.length) {
+                document.getElementById('carFact').textContent = carFacts[currentIndex];
+                currentIndex++;
+                sessionStorage.setItem('carFactIndex', currentIndex);
+            } else {
+                // Display a humorous message and the home button
+                document.getElementById('carFact').textContent = "Well, it seems you've driven through our entire parking lot of car facts! How about a pit stop at the home page?";
+                document.getElementById('homeButton').classList.remove('d-none');
+
+                // Clear sessionStorage after 30 seconds
+                setTimeout(function () {
+                    sessionStorage.removeItem('carFactIndex');
+                    location.reload(); // Reload the page to reset the facts
+                }, 30 * 1000); // 30 seconds in milliseconds
+            }
+        }
+
+        // Display the initial car fact
+        displayCarFact();
+
+        // Refresh the car fact on button click
+        document.getElementById('carFact').addEventListener('click', displayCarFact);
+
+        // Add an event listener to the home button
+        document.getElementById('homeButton').addEventListener('click', function () {
+            // Redirect to the home page or perform any desired action
+            window.location.href = '/';
+        });
+    </script>
+{% endblock %}

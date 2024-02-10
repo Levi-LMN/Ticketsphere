@@ -4,9 +4,7 @@
     {% if current_user.is_authenticated %}
         <h2>Welcome, {{ current_user.username }}!</h2>
         <p>Explore the following options:</p>
-        <ul>
-            <li><a href="{{ url_for('logout') }}">Logout</a></li>
-        </ul>
+
 
     {% else %}
         <h2>Welcome to the Public Transport Ticketing System</h2>
@@ -22,6 +20,11 @@
     <p><a href="{{ url_for('add_route') }}">Add a new Route</a></p>
     <p><a href="{{ url_for('view_routes') }}">view all routes</a></p>
     <p><a href="{{ url_for('view_vehicles') }}">view all vehicles</a></p>
+
+<br>
+<h1>user routes</h1>
+<p><a href="{{ url_for('find_route') }}">Routes</a></p>
+
 
 
 {% endblock %}

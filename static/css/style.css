@@ -5,3 +5,91 @@
   width: 100%;
 
 }
+
+/* Add your custom styling specific to the find_route.html page */
+
+.find-route-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.find-route-container h2 {
+    color: #333;
+    text-align: center;
+}
+
+.find-route-container form {
+    margin-bottom: 20px;
+}
+
+.find-route-container label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.find-route-container select, .find-route-container button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+.find-route-container button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.find-route-container button:hover {
+    background-color: #45a049;
+}
+
+.find-route-container .search-results, .find-route-container .no-results {
+    margin-top: 20px;
+}
+
+.find-route-container h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.find-route-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.find-route-container li {
+    margin-bottom: 8px;
+    color: #555;
+}
+
+/* Add this to your existing styles.css */
+
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.result-table th, .result-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.result-table th {
+    background-color: #f2f2f2;
+}
+
+.result-item td {
+    vertical-align: top;
+}
+
+

@@ -13,6 +13,7 @@ from wtforms.validators import DataRequired
 from flask import render_template, redirect, url_for, flash
 from datetime import datetime
 from wtforms import SelectField
+from flask import render_template, request
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
@@ -115,6 +116,11 @@ class RouteForm(FlaskForm):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+# Define a custom 404 error handler
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
 
 
 @app.route('/')
@@ -278,8 +284,30 @@ def view_vehicles_by_sacco(sacco_id):
     saccos = Sacco.query.all()
     return render_template('admin/view_vehicles.html', vehicles=vehicles, saccos=saccos, selected_sacco=sacco)
 
-# ...
 
+
+@app.route('/find_route', methods=['GET', 'POST'])
+def find_route():
+    all_routes = Route.query.all()
+
+    if request.method == 'POST':
+        origin = request.form.get('origin')
+        destination = request.form.get('destination')
+
+        # Print debug information
+        print(f"Selected Origin: {origin}, Destination: {destination}")
+
+        # Perform the filtering based on the selected origin and destination
+        if origin and destination:
+            routes = Route.query.filter_by(origin=origin, destination=destination).all()
+        else:
+            routes = all_routes
+    else:
+        routes = all_routes
+        origin = ''  # Set default values when loading the page
+        destination = ''  # Set default values when loading the page
+
+    return render_template('find_route.html', routes=routes, all_routes=all_routes, origin=origin, destination=destination)
 
 if __name__ == '__main__':
     # Create all tables before running the app
