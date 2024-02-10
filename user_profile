@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile - Ticketsphere</title>
+    <!-- Add your CSS links if needed -->
+</head>
+<body>
+    <div class="container">
+        <h2>User Profile</h2>
+        <p>Welcome, {{ user.username }}!</p>
+
+        <!-- Display other user details as needed -->
+        <ul>
+            <li>Email: {{ user.email }}</li>
+            <!-- Add more details as needed -->
+        </ul>
+
+        <!-- You can add more content, such as user-specific data or actions -->
+
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</body>
+</html>

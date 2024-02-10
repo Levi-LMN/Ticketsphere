@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>Add Vehicle</h2>
+    <form method="POST" action="{{ url_for('add_vehicle') }}">
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        {{ form.name.label(class="form-control-label") }}
+        {{ form.name(class="form-control", placeholder="Enter vehicle name", required="required") }}
+        {% for error in form.name.errors %}
+          <small class="text-danger">{{ error }}</small>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.capacity.label(class="form-control-label") }}
+        {{ form.capacity(class="form-control", placeholder="Enter capacity", required="required") }}
+        {% for error in form.capacity.errors %}
+          <small class="text-danger">{{ error }}</small>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.type.label(class="form-control-label") }}
+        {{ form.type(class="form-control", placeholder="Enter vehicle type", required="required") }}
+        {% for error in form.type.errors %}
+          <small class="text-danger">{{ error }}</small>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.sacco_id.label(class="form-control-label") }}
+        {{ form.sacco_id(class="form-control", required="required") }}
+        {% for error in form.sacco_id.errors %}
+          <small class="text-danger">{{ error }}</small>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.route_id.label(class="form-control-label") }}
+        {{ form.route_id(class="form-control", required="required") }}
+        {% for error in form.route_id.errors %}
+          <small class="text-danger">{{ error }}</small>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.submit(class="btn btn-primary") }}
+      </div>
+    </form>
+  </div>
+{% endblock %}

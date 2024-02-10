@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>Add Route</h2>
+    <form method="POST" action="{{ url_for('add_route') }}">
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        {{ form.origin.label(class="form-control-label") }}
+        {{ form.origin(class="form-control", placeholder="Enter origin", required="required") }}
+        {% for error in form.origin.errors %}
+          <small class="text-danger">{{ error }}</small>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.destination.label(class="form-control-label") }}
+        {{ form.destination(class="form-control", placeholder="Enter destination", required="required") }}
+        {% for error in form.destination.errors %}
+          <small class="text-danger">{{ error }}</small>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.distance.label(class="form-control-label") }}
+        {{ form.distance(class="form-control", placeholder="Enter distance", required="required") }}
+        {% for error in form.distance.errors %}
+          <small class="text-danger">{{ error }}</small>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.duration.label(class="form-control-label") }}
+        {{ form.duration(class="form-control", placeholder="Enter duration", required="required") }}
+        {% for error in form.duration.errors %}
+          <small class="text-danger">{{ error }}</small>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.submit(class="btn btn-primary") }}
+      </div>
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>All Vehicles</h2>
+
+    <div class="form-group">
+      <label for="saccoFilter">Filter by Sacco:</label>
+      <select id="saccoFilter" class="form-control" onchange="location = this.value;">
+        <option value="{{ url_for('view_vehicles') }}">All Saccos</option>
+        {% for sacco in saccos %}
+          <option value="{{ url_for('view_vehicles_by_sacco', sacco_id=sacco.id) }}" {% if selected_sacco and selected_sacco.id == sacco.id %}selected{% endif %}>{{ sacco.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    {% if vehicles %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Capacity</th>
+            <th>Type</th>
+            <th>Sacco</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for vehicle in vehicles %}
+            <tr>
+              <td>{{ vehicle.id }}</td>
+              <td>{{ vehicle.name }}</td>
+              <td>{{ vehicle.capacity }}</td>
+              <td>{{ vehicle.type }}</td>
+              <td>{{ vehicle.sacco.name }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No vehicles available.</p>
+    {% endif %}
+  </div>
+{% endblock %}

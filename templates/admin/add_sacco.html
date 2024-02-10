@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Sacco{% endblock %}
+
+{% block header %}Add Sacco{% endblock %}
+
+{% block content %}
+    <form method="post" action="{{ url_for('add_sacco') }}">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.name.label }}
+            {{ form.name }}
+        </div>
+        <div>
+            {{ form.description.label }}
+            {{ form.description }}
+        </div>
+        <div>
+            {{ form.contact_info.label }}
+            {{ form.contact_info }}
+        </div>
+        <div>
+            {{ form.submit }}
+        </div>
+    </form>
+{% endblock %}
