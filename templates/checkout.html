@@ -1,0 +1,21 @@
+<!-- checkout.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Checkout - Your App Title{% endblock %}
+
+{% block content %}
+    <h1>Checkout</h1>
+
+    <div id="selected-seat-info">
+        <!-- Your checkout-specific content goes here -->
+        <h2>Selected Seat Information:</h2>
+        <p id="selected-seat">Selected Seats: {{ ', '.join(selected_seats) }}</p>
+    </div>
+
+    <form action="{{ url_for('checkout', route_id=route_id, vehicle_id=vehicle_id) }}" method="post">
+        <input type="hidden" name="selected_seats" value="{{ ','.join(selected_seats) }}">
+        <!-- Additional form elements go here -->
+        <input type="submit" value="Confirm and Proceed to Checkout">
+    </form>
+{% endblock %}

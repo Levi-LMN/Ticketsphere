@@ -351,22 +351,6 @@ def search_routes():
 
     return render_template('search_routes.html', form=form, routes=routes)
 
-
-@app.route('/book_vehicle/<int:route_id>/<int:vehicle_id>', methods=['GET', 'POST'])
-def book_vehicle(route_id, vehicle_id):
-    # Retrieve the vehicle information from the database
-    vehicle = Vehicle.query.get_or_404(vehicle_id)
-
-    # Assuming 5 seats per row
-    seats_per_row = 5
-
-    # Calculate the number of rows and the remaining seats
-    rows = vehicle.capacity // seats_per_row
-    remaining_seats = vehicle.capacity % seats_per_row
-
-    return render_template('booking_confirmation.html', route_id=route_id, vehicle_id=vehicle_id, rows=rows, seats_per_row=seats_per_row, remaining_seats=remaining_seats)
-
-
 if __name__ == '__main__':
     # Create all tables before running the app
     with app.app_context():

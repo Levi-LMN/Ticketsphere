@@ -13,29 +13,36 @@
         {{ form.submit }}
     </form>
 
+    <!-- Display search results -->
+    <h2>Routes</h2>
+
+    {% if routes %}
+        <ul>
+            {% for route in routes %}
+                <li>
+                    <a href="{{ url_for('route_detail', route_id=route.id) }}">
+                        {{ route.name }} ({{ route.origin }} to {{ route.destination }})
+                    </a>
+                    {% if route.vehicles %}
+                        <ul>
+                            {% for vehicle in route.vehicles %}
+                                <li>
+                                    Sacco: {{ vehicle.sacco.name }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No vehicles associated with this route.</p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No routes found.</p>
+    {% endif %}
+
     <p>or</p>
 
     <a href="{{ url_for('route_list') }}">View All Routes</a>
 
-    <!-- Display search results -->
-    <ul>
-        {% for route in routes %}
-            <li>
-                <a href="{{ url_for('route_detail', route_id=route.id) }}">
-                    {{ route.name }} ({{ route.origin }} to {{ route.destination }})
-                </a>
-                {% if route.vehicles %}
-                    <ul>
-                        {% for vehicle in route.vehicles %}
-                            <li>
-                                Sacco: {{ vehicle.sacco.name }}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No vehicles associated with this route.</p>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
 {% endblock %}
