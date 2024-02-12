@@ -21,7 +21,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                            <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Home</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">About us</a>
@@ -39,14 +39,14 @@
                        <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             {% if current_user.is_authenticated %}
-                                {{ current_user.username }}
+                                {{ current_user.first_name }}'s Account
                             {% else %}
                                 User Account
                             {% endif %}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             {% if current_user.is_authenticated %}
-                                <li><a class="dropdown-item" href="{{ url_for('user_profile') }}">User Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('profile') }}">User Profile</a></li>
                                 <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
                             {% else %}
                                 <li><a class="dropdown-item" href="{{ url_for('login') }}">Login</a></li>
@@ -96,7 +96,7 @@
 
         <div class="container text-center">
 
-            <span>&copy; 2024 Ticketspehere. All rights reserved.</span>
+            <span>&copy; 2024 <a href="https://github.com/Levi-LMN/Ticketsphere">Ticketsphere</a> All rights reserved. </span>
         </div>
     </footer>
 {% endblock %}

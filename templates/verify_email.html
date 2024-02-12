@@ -1,0 +1,15 @@
+<!-- templates/verify_email.html -->
+{% extends "base.html" %}
+
+{% block title %}Email Verification - My Flask App{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>Email Verification</h2>
+        {% if message %}
+            <div class="alert alert-{{ message_category }} mt-3">
+                {{ message }}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

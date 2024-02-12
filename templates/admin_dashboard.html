@@ -1,0 +1,12 @@
+<!-- admin_dashboard.html -->
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+    <h1>Welcome, {{ user.first_name }}!</h1>
+    <p>This is the admin dashboard.</p>
+    <a href="{{ url_for('user_management') }}">User Management</a>
+    <br>
+    <a href="{{ url_for('logout') }}">Logout</a>
+{% endblock %}

@@ -1,0 +1,19 @@
+<!-- change_role.html -->
+{% extends 'base.html' %}
+
+{% block title %}Change User Role{% endblock %}
+
+{% block content %}
+    <h1>Change User Role</h1>
+    <p>Changing role for user: {{ user.first_name }} {{ user.last_name }} ({{ user.email }})</p>
+    <form method="post">
+        <label for="new_role">New Role:</label>
+        <select name="new_role" id="new_role">
+            {% for role in user_roles %}
+                <option value="{{ role }}" {% if user.role == role %}selected{% endif %}>{{ role }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Change Role</button>
+    </form>
+    <a href="{{ url_for('user_management') }}">Back to User Management</a>
+{% endblock %}

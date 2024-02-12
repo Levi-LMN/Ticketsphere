@@ -1,0 +1,10 @@
+<!-- sacco_admin_dashboard.html -->
+{% extends 'base.html' %}
+
+{% block title %}Sacco Admin Dashboard{% endblock %}
+
+{% block content %}
+    <h1>Welcome, {{ user.first_name }}!</h1>
+    <p>This is the Sacco admin dashboard.</p>
+    <a href="{{ url_for('logout') }}">Logout</a>
+{% endblock %}
