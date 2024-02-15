@@ -1,0 +1,27 @@
+<!-- templates/register_sacco_admin.html -->
+{% extends 'base.html' %}
+
+{% block title %}Register as Sacco Admin{% endblock %}
+
+{% block content %}
+  <h2>Register as Sacco Admin</h2>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <label for="first_name">First Name:</label>
+    {{ form.first_name }}
+    <br>
+    <label for="last_name">Last Name:</label>
+    {{ form.last_name }}
+    <br>
+    <label for="email">Email:</label>
+    {{ form.email }}
+    <br>
+    <label for="password">Password:</label>
+    {{ form.password }}
+    <br>
+    <label for="sacco_role">Sacco Role:</label>
+    {{ form.sacco_role }}
+    <br>
+    <button type="submit">Register</button>
+  </form>
+{% endblock %}

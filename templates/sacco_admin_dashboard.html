@@ -6,5 +6,17 @@
 {% block content %}
     <h1>Welcome, {{ user.first_name }}!</h1>
     <p>This is the Sacco admin dashboard.</p>
-    <a href="{{ url_for('logout') }}">Logout</a>
+    {% if assigned_sacco %}
+        <p>You are assigned to Sacco: {{ assigned_sacco }}</p>
+        <br>
+        <a href="{{ url_for('add_schedule') }}">Add Travel Schedule</a>
+        <br>
+        <a href="{{ url_for('add_vehicle') }}">Add Vehicle</a>
+        <br>
+        <a href="{{ url_for('view_schedules') }}">View Travel Schedules</a>
+        <br>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    {% else %}
+        <p>You are not assigned to any Sacco.</p>
+    {% endif %}
 {% endblock %}

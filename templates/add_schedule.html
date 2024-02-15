@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Travel Schedule{% endblock %}
+
+{% block header %}Add Travel Schedule{% endblock %}
+
+{% block content %}
+    <h2>Add Travel Schedule</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('add_schedule') }}">
+        <label for="departure_location">Departure Location:</label>
+        <input type="text" name="departure_location" required>
+
+        <label for="destination">Destination:</label>
+        <input type="text" name="destination" required>
+
+        <label for="departure_time">Departure Time:</label>
+        <input type="datetime-local" name="departure_time" required>
+
+        <label for="vehicle_id">Select Vehicle:</label>
+        <select name="vehicle_id" required>
+            {% for vehicle in sacco_vehicles %}
+                <option value="{{ vehicle.id }}">{{ vehicle.make }} {{ vehicle.model }} - {{ vehicle.registration_plate }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Add Schedule</button>
+    </form>
+
+    <a href="{{ url_for('sacco_admin_dashboard') }}">Back to Dashboard</a>
+{% endblock %}

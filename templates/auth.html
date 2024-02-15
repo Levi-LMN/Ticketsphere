@@ -1,0 +1,16 @@
+<!-- templates/auth.html -->
+{% extends 'base.html' %}
+
+{% block title %}Authentication{% endblock %}
+
+{% block content %}
+  <h2>Authentication</h2>
+  <p>Choose an option below to register:</p>
+
+  <ul>
+    <li><a href="{{ url_for('register_user') }}">Register as User</a></li>
+    <li><a href="{{ url_for('register_driver') }}">Register as Driver</a></li>
+    <li><a href="{{ url_for('register_sacco_admin') }}">Register as Sacco Admin</a></li>
+    <li><a href="{{ url_for('register_admin') }}">Register as Admin</a></li>
+  </ul>
+{% endblock %}

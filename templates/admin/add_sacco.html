@@ -1,26 +1,27 @@
+<!-- admin/add_sacco.html -->
+
 {% extends 'base.html' %}
 
-{% block title %}Add Sacco{% endblock %}
-
-{% block header %}Add Sacco{% endblock %}
-
 {% block content %}
+  <div class="container mt-5">
+    <h2>Add Sacco</h2>
     <form method="post" action="{{ url_for('add_sacco') }}">
-        {{ form.hidden_tag() }}
-        <div>
-            {{ form.name.label }}
-            {{ form.name }}
-        </div>
-        <div>
-            {{ form.description.label }}
-            {{ form.description }}
-        </div>
-        <div>
-            {{ form.contact_info.label }}
-            {{ form.contact_info }}
-        </div>
-        <div>
-            {{ form.submit }}
-        </div>
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control") }}
+        {% for error in form.name.errors %}
+          <span class="text-danger">{{ error }}</span>
+        {% endfor %}
+      </div>
+      <div class="form-group">
+        {{ form.admin.label(class="form-label") }}
+        {{ form.admin(class="form-control") }}
+        {% for error in form.admin.errors %}
+          <span class="text-danger">{{ error }}</span>
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn btn-primary">Add Sacco</button>
     </form>
+  </div>
 {% endblock %}

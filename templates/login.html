@@ -1,16 +1,19 @@
 <!-- templates/login.html -->
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Login - My Flask App{% endblock %}
+{% block title %}Login{% endblock %}
 
 {% block content %}
-    <h2>Login</h2>
-    <form method="post">
-        {{ form.hidden_tag() }}
-        <p>{{ form.email.label }} {{ form.email() }}</p>
-        <p>{{ form.password.label }} {{ form.password() }}</p>
-        <p>{{ form.submit() }}</p>
-    </form>
-
-    <p>Not registered? <a href="{{ url_for('register') }}">Sign up</a></p>
+  <h2>Login</h2>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <label for="email">Email:</label>
+    {{ form.email }}
+    <br>
+    <label for="password">Password:</label>
+    {{ form.password }}
+    <br>
+    <button type="submit">Login</button>
+  </form>
+ <a href="{{ url_for('auth') }}">Dont have an account? signup</a>
 {% endblock %}
