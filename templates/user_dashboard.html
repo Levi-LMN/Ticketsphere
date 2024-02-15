@@ -2,6 +2,103 @@
 {% extends "base.html" %}
 
 {% block title %}Home - My Flask App{% endblock %}
+{% block header %}Home{% endblock %}
+{% block styles %}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Carlito&display=swap');
+:root{
+
+    margin: 0;
+    padding: 0;
+    --size:100px;
+    --white: #fff;
+    --black: #000;
+    --font1:'Carlito', sans-serif;
+
+}
+
+
+.reviews{
+    width:80vw;
+    display: grid;
+    grid-template: 40% 40% / 40% 40% ;
+    justify-content: center;
+    align-content: center;
+
+    gap: 15px;
+
+    & .box{
+        padding: 1em ;
+
+        block-size: auto;
+        overflow: hidden;
+        border-radius: 10%;
+        background: var(--black) ;
+        color: var(--white);
+        font-family: var(--font1);
+        animation: myim 3s linear;
+        box-shadow: 1px 1px 20px 4px black;
+        transition: 0.3s linear;
+        transition-delay: 0.5;
+
+        &:hover{
+            box-shadow: 1px 1px 1px 3px black;
+            transform: scale(1.01);
+        }
+
+        & p{
+
+            padding: 1em 3px;
+            cursor: pointer;
+            margin-bottom: 2em;
+        }
+    }
+}
+.box:nth-child(1){
+
+    background-color: #000000;
+    background-image: linear-gradient(135deg, #000000 60%, #ffffff12 100%);
+    ;
+}
+
+.box:nth-child(2){
+
+    background-color: #000000;
+    background-image: linear-gradient(225deg, #000000 60%, #ffffff12 100%);
+    ;
+}
+
+.box:nth-child(3){
+
+    background-color: #000000;
+    background-image: linear-gradient(45deg, #000000 60%, #ffffff12 100%);
+    ;
+}
+
+.box:nth-child(4){
+
+    background-color: #000000;
+    background-image: linear-gradient(315deg, #0000009f 60%, #ffffff12 100%);
+    ;
+}
+
+
+
+a{
+    text-decoration: none;
+    font-family: var();
+    font-size: 1.2em;
+    color: var(--white);
+}
+span > img{
+ width: 32px;
+ height: 32px;
+ margin-right: 10px  ;
+ float: right;
+
+}
+    </style>
+{% endblock %}
 
 {% block content %}
     <div class="container mt-7">
@@ -37,14 +134,14 @@
 
 
             <div class="col-md-8 mb-3 ml-md-4">
-                <h2 class="mb-3">Popular Routes</h2>
+                <h2 class="mb-3">Ride in a style of your choice</h2>
                 <div class="row">
                     <div class="col-md-4">
                         <div class="card">
                             <img src="" alt="" class="card-img-top">
                             <div class="card-body">
-                                <h3 class="card-title">Route 1</h3>
-                                <p class="card-text">Route 1 description</p>
+                                <h3 class="card-title">Economy</h3>
+                                <p class="card-text">Travel smart with our Economy Class – affordable prices, comfortable seats, and all the essentials for a budget-friendly journey!</p>
                                 <a href="#" class="btn btn-primary">View Schedule</a>
                             </div>
                         </div>
@@ -55,8 +152,8 @@
     <div class="card">
         <img src="" alt="" class="card-img-top">
         <div class="card-body">
-            <h3 class="card-title">Route 2</h3>
-            <p class="card-text">Route 2 description</p>
+            <h3 class="card-title">Business</h3>
+            <p class="card-text">Upgrade to comfort and convenience! Our Premium Class offers spacious seating, extra amenities, and a touch of luxury to make your journey extraordinary</p>
             <a href="#" class="btn btn-primary">View Schedule</a>
         </div>
     </div>
@@ -67,8 +164,8 @@
     <div class="card">
         <img src="" alt="" class="card-img-top">
         <div class="card-body">
-            <h3 class="card-title">Route 3</h3>
-            <p class="card-text">Route 3 description</p>
+            <h3 class="card-title">Executive</h3>
+            <p class="card-text">Indulge in opulence with our Executive Class – where every moment is a first-class experience. Enjoy luxury seating, gourmet treats, and unparalleled service for the ultimate in bus travel</p>
             <a href="#" class="btn btn-primary">View Schedule</a>
         </div>
     </div>
@@ -79,14 +176,14 @@
         </div>
 
         <div class="container mt-5">
-    <h2 class="text-center mb-4">Upcoming Events</h2>
+    <h2 class="text-center mb-4">Explore Kenya's Popular Destination Routes</h2>
     <div class="row">
         <div class="col-md-4 mb-4">
             <div class="card border-0 shadow">
-                <img src="https://placekitten.com/400/200" class="card-img-top" alt="Event 1 Image">
+                <img src="https://pngfre.com/wp-content/uploads/bus-23-1-1024x589.png" class="card-img-top" alt="route 1 Image">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Event 1</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                    <h5 class="card-title mb-3">Nairobi to Mombasa</h5>
+                    <p class="card-text">Discover the beauty of coastal landscapes and vibrant city life on our Nairobi to Mombasa route.</p>
                 </div>
                 <div class="card-footer bg-transparent border-0">
                     <small class="text-muted">Date: February 25, 2024</small>
@@ -95,10 +192,10 @@
         </div>
         <div class="col-md-4 mb-4">
             <div class="card border-0 shadow">
-                <img src="https://placekitten.com/400/200" class="card-img-top" alt="Event 2 Image">
+                <img src="https://assets.volvo.com/is/image/VolvoInformationTechnologyAB/BS%20VI%20Bus%20Single%20Axcel_Single%20Bus?wid=1400&fit=constrain" class="card-img-top" alt="route 2 Image">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Event 2</h5>
-                    <p class="card-text">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    <h5 class="card-title mb-3">Nakuru to Kisumu</h5>
+                    <p class="card-text">Embark on a scenic journey from Nakuru to Kisumu, surrounded by the breathtaking views of the Great Rift Valley.</p>
                 </div>
                 <div class="card-footer bg-transparent border-0">
                     <small class="text-muted">Date: March 10, 2024</small>
@@ -107,10 +204,10 @@
         </div>
         <div class="col-md-4 mb-4">
             <div class="card border-0 shadow">
-                <img src="https://placekitten.com/400/200" class="card-img-top" alt="Event 3 Image">
+                <img src="data:image/jpeg;base64,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" class="card-img-top" alt="route 3 Image">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Event 3</h5>
-                    <p class="card-text">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                    <h5 class="card-title mb-3">Kisii to Eldoret</h5>
+                    <p class="card-text">Experience the cultural richness as you travel from Kisii to Eldoret, a journey filled with diverse traditions and landscapes.</p>
                 </div>
                 <div class="card-footer bg-transparent border-0">
                     <small class="text-muted">Date: March 18, 2024</small>
@@ -121,11 +218,88 @@
 </div>
 
 
-        <div class="mt-4">
-            <h2>Recent News</h2>
-            <div class="card-deck">
-                <!-- Repeat the structure for News 1, News 2, and News 3 -->
+
+
+
+
+<!-- Image Slider -->
+        <H2>Discover!</H2>
+<div id="imageSlider" class="carousel slide" data-ride="carousel" data-interval="3000" >
+    <div class="carousel-inner" style="height: 150px">
+        <div class="carousel-item active">
+            <img src="https://osabus.com/wp-content/uploads/2022/09/49-MAN-1024x768.jpeg" class="d-block w-100 img-fluid" alt="Cute Kitten 1" >
+            <div class="carousel-caption d-none d-md-block">
+                <h5>Caption for Slide 1</h5>
+                <p>Additional information or description for Slide 1.</p>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="https://www.unitedbuses.com/wp-content/uploads/Screen-Shot-2022-06-12-at-6.04.38-PM.png" class="d-block w-100 img-fluid" alt="Cute Kitten 2">
+            <div class="carousel-caption d-none d-md-block">
+                <h5>Caption for Slide 2</h5>
+                <p>Additional information or description for Slide 2.</p>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="https://www.golamers.com/wp-content/uploads/2022/04/exec-1.jpg" class="d-block w-100 img-fluid" alt="Cute Kitten 2">
+            <div class="carousel-caption d-none d-md-block">
+                <h5>Caption for Slide 3</h5>
+                <p>Additional information or description for Slide 2.</p>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSct30yGP8WyjBMWSzRDFfBRAeyEVQUikGwyw&usqp=CAU" class="d-block w-100 img-fluid" alt="Cute Kitten 2">
+            <div class="carousel-caption d-none d-md-block">
+                <h5>Caption for Slide 4</h5>
+                <p>Additional information or description for Slide 2.</p>
+            </div>
+        </div>
+        <!-- Add more slides as needed -->
+    </div>
+    <a class="carousel-control-prev" href="#imageSlider" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#imageSlider" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div>
+    </div>
+
+<center>
+    <h2>Explore</h2>
+<div class="reviews">
+            <div class="box">
+                <a href="www.ticketing-system.com"><span><img src="https://i.pinimg.com/736x/bd/d1/2b/bdd12b7e520286e6bd5885476de68dec.jpg" alt="">Ticketing System</span> </a>
+                <p>Reviews: The ticketing system is incredibly user-friendly and efficient. It has streamlined our support process, making it easier for our team to manage and resolve customer issues promptly.</p>
+            </div>
+
+            <div class="box">
+                <a href="www.ticketing-platform.com"><span><img src="https://th.bing.com/th/id/R.9f01f88c8267d9a7ada397f99d89316c?rik=cepAzyUezk5kNg&riu=http%3a%2f%2finvites-shop.com%2fen%2fwp-content%2fuploads%2f2013%2f04%2fdribl_logo.jpg&ehk=UxVv02%2bfh8%2bM6PYepfg0e09UsfUhuPhSZexXaa%2bnZLM%3d&risl=&pid=ImgRaw&r=0" alt="">Ticketing Platform</span></a>
+                <p>Reviews: The platform has a robust set of features that allow us to customize and manage our ticketing system efficiently. The reporting tools provide valuable insights into our support performance.</p>
+            </div>
+
+            <div class="box">
+                <a href="www.helpdesk-solution.com"><span><img src="https://th.bing.com/th/id/OIP.Wxx6J0TOgXsiCqapfDbrOgHaHa?rs=1&pid=ImgDetMain" alt="">Helpdesk Solution</span></a>
+                <p>Reviews: The helpdesk solution integrated with the ticketing system has improved our overall customer service. It's a comprehensive tool that ensures all customer queries are addressed promptly and effectively.</p>
+            </div>
+
+            <div class="box">
+                <a href="www.support-management.com"><span><img src="https://th.bing.com/th/id/OIP.89WHXH-g9dSv6k9I8nxa4wHaHa?rs=1&pid=ImgDetMain" alt="">Support Management</span></a>
+                <p>Reviews: Integrated with Adobe Creative Cloud, it allows users to create a portfolio website with Adobe tools.</p>
             </div>
         </div>
     </div>
+</center>
+<!--block scripts-->
+{% block scripts %}
+
+       <!-- Add Bootstrap JS and Popper.js -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+{% endblock %}
+
 {% endblock %}

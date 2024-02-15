@@ -3,129 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three Cards with Flip Effect and Gradient Styling</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f4;
-        }
-
-        .card-container {
-            perspective: 1000px;
-        }
-
-        .card {
-            width: 200px;
-            height: 300px;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.5s;
-        }
-
-        .card:hover {
-            transform: rotateY(180deg);
-        }
-
-        .card .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .card1 .card-face.front {
-            background: linear-gradient(45deg, #FF7E5F, #FFB94E, #7EB2DD); /* Gradient for front face */
-            color: #fff;
-        }
-
-        .card1 .card-face.back {
-            background: linear-gradient(45deg, #7EB2DD, #FFB94E, #FF7E5F); /* Gradient for back face */
-            color: #fff;
-            transform: rotateY(180deg);
-        }
-
-        .card2 .card-face.front {
-            background: linear-gradient(45deg, #FFBF69, #E83E8C, #2274A5); /* Gradient for front face */
-            color: #fff;
-        }
-
-        .card2 .card-face.back {
-            background: linear-gradient(45deg, #2274A5, #E83E8C, #FFBF69); /* Gradient for back face */
-            color: #fff;
-            transform: rotateY(180deg);
-        }
-
-        .card3 .card-face.front {
-            background: linear-gradient(45deg, #58CCED, #FDCB7E, #FF7676); /* Gradient for front face */
-            color: #fff;
-        }
-
-        .card3 .card-face.back {
-            background: linear-gradient(45deg, #FF7676, #FDCB7E, #58CCED); /* Gradient for back face */
-            color: #fff;
-            transform: rotateY(180deg);
-        }
-
-        .card img {
-            max-width: 100%;
-            max-height: 60%;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Your Page Title</title>
 </head>
 <body>
-
-    <div class="card-container card1">
-        <div class="card">
-            <div class="card-face front">
-                <img src="https://via.placeholder.com/150" alt="Card 1 Image">
-                <h2>Card 1 - Front</h2>
-                <p>This is the front of card 1. Additional content here.</p>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6">
+                <a href="www.behance.net" class="text-dark">
+                    <div class="card">
+                        <img src="https://i.pinimg.com/736x/bd/d1/2b/bdd12b7e520286e6bd5885476de68dec.jpg" class="card-img-top" alt="Behance">
+                        <div class="card-body">
+                            <h5 class="card-title">Behance</h5>
+                            <p class="card-text">Features: Ideal for designers, illustrators, and creative professionals. Allows the creation of project portfolios.</p>
+                        </div>
+                    </div>
+                </a>
             </div>
-            <div class="card-face back">
-                <h2>Card 1 - Back</h2>
-                <p>This is the back of card 1. Additional content here.</p>
+
+            <div class="col-md-6">
+                <a href="dribbble.com" class="text-dark">
+                    <div class="card">
+                        <img src="https://th.bing.com/th/id/R.9f01f88c8267d9a7ada397f99d89316c?rik=cepAzyUezk5kNg&riu=http%3a%2f%2finvites-shop.com%2fen%2fwp-content%2fuploads%2f2013%2f04%2fdribl_logo.jpg&ehk=UxVv02%2bfh8%2bM6PYepfg0e09UsfUhuPhSZexXaa%2bnZLM%3d&risl=&pid=ImgRaw&r=0" class="card-img-top" alt="Dribbble">
+                        <div class="card-body">
+                            <h5 class="card-title">Dribbble</h5>
+                            <p class="card-text">Features: A platform for designers to showcase their work, particularly focusing on smaller design snippets called "shots."</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 mt-4">
+                <a href="www.artstation.com" class="text-dark">
+                    <div class="card">
+                        <img src="https://th.bing.com/th/id/OIP.Wxx6J0TOgXsiCqapfDbrOgHaHa?rs=1&pid=ImgDetMain" class="card-img-top" alt="ArtStation">
+                        <div class="card-body">
+                            <h5 class="card-title">ArtStation</h5>
+                            <p class="card-text">Features: Geared towards artists in the fields of gaming, film, media, and entertainment. It allows artists to showcase their portfolios.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 mt-4">
+                <a href="portfolio.adobe.com" class="text-dark">
+                    <div class="card">
+                        <img src="https://th.bing.com/th/id/OIP.89WHXH-g9dSv6k9I8nxa4wHaHa?rs=1&pid=ImgDetMain" class="card-img-top" alt="Adobe Portfolio">
+                        <div class="card-body">
+                            <h5 class="card-title">Adobe Portfolio</h5>
+                            <p class="card-text">Features: Integrated with Adobe Creative Cloud, it allows users to create a portfolio website with Adobe tools.</p>
+                        </div>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
 
-    <div class="card-container card2">
-        <div class="card">
-            <div class="card-face front">
-                <img src="https://via.placeholder.com/150" alt="Card 2 Image">
-                <h2>Card 2 - Front</h2>
-                <p>This is the front of card 2. Additional content here.</p>
-            </div>
-            <div class="card-face back">
-                <h2>Card 2 - Back</h2>
-                <p>This is the back of card 2. Additional content here.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="card-container card3">
-        <div class="card">
-            <div class="card-face front">
-                <img src="https://via.placeholder.com/150" alt="Card 3 Image">
-                <h2>Card 3 - Front</h2>
-                <p>This is the front of card 3. Additional content here.</p>
-            </div>
-            <div class="card-face back">
-                <h2>Card 3 - Back</h2>
-                <p>This is the back of card 3. Additional content here.</p>
-            </div>
-        </div>
-    </div>
-
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

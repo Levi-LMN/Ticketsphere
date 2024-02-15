@@ -60,9 +60,11 @@
                         <h5 class="card-title">Verified</h5>
                         <p class="card-text">
                             {% if user.is_verified %}
-                                <span class="badge bg-success">Yes</span>
+                                <span class="badge bg-success">Yes</span><br>
+                                <span class="badge bg-success">Welcome to Ticketsphere</span>
                             {% else %}
-                                <span class="badge bg-danger">No</span>
+                                <span class="badge bg-danger">No</span><br>
+                                <span class="badge bg-danger">This mean You will not be able to recover your account</span>
                             {% endif %}
                         </p>
                     </div>
