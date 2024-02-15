@@ -4,7 +4,17 @@
 {% block title %}Driver Dashboard{% endblock %}
 
 {% block content %}
-    <h1>Welcome, {{ user.first_name }}!</h1>
+    <h1>Welcome, {{ current_user.first_name }}!</h1>
     <p>This is the driver dashboard.</p>
+ <h3>Your Vehicles:</h3>
+  {% if vehicles %}
+    <ul>
+      {% for vehicle in vehicles %}
+        <li>{{ vehicle.make }} {{ vehicle.model }} - {{ vehicle.registration_plate }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No vehicles associated with your account.</p>
+  {% endif %}
     <a href="{{ url_for('logout') }}">Logout</a>
 {% endblock %}

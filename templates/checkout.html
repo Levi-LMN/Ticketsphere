@@ -3,65 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>Your Page Title</title>
+    <title>Nearest Bus Stops</title>
 </head>
 <body>
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-6">
-                <a href="www.behance.net" class="text-dark">
-                    <div class="card">
-                        <img src="https://i.pinimg.com/736x/bd/d1/2b/bdd12b7e520286e6bd5885476de68dec.jpg" class="card-img-top" alt="Behance">
-                        <div class="card-body">
-                            <h5 class="card-title">Behance</h5>
-                            <p class="card-text">Features: Ideal for designers, illustrators, and creative professionals. Allows the creation of project portfolios.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
+    <h1>Nearest Bus Stops</h1>
 
-            <div class="col-md-6">
-                <a href="dribbble.com" class="text-dark">
-                    <div class="card">
-                        <img src="https://th.bing.com/th/id/R.9f01f88c8267d9a7ada397f99d89316c?rik=cepAzyUezk5kNg&riu=http%3a%2f%2finvites-shop.com%2fen%2fwp-content%2fuploads%2f2013%2f04%2fdribl_logo.jpg&ehk=UxVv02%2bfh8%2bM6PYepfg0e09UsfUhuPhSZexXaa%2bnZLM%3d&risl=&pid=ImgRaw&r=0" class="card-img-top" alt="Dribbble">
-                        <div class="card-body">
-                            <h5 class="card-title">Dribbble</h5>
-                            <p class="card-text">Features: A platform for designers to showcase their work, particularly focusing on smaller design snippets called "shots."</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
+    <button onclick="getUserLocation()">Get Nearest Bus Stops</button>
 
-            <div class="col-md-6 mt-4">
-                <a href="www.artstation.com" class="text-dark">
-                    <div class="card">
-                        <img src="https://th.bing.com/th/id/OIP.Wxx6J0TOgXsiCqapfDbrOgHaHa?rs=1&pid=ImgDetMain" class="card-img-top" alt="ArtStation">
-                        <div class="card-body">
-                            <h5 class="card-title">ArtStation</h5>
-                            <p class="card-text">Features: Geared towards artists in the fields of gaming, film, media, and entertainment. It allows artists to showcase their portfolios.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
+    <div id="nearestBusStops"></div>
 
-            <div class="col-md-6 mt-4">
-                <a href="portfolio.adobe.com" class="text-dark">
-                    <div class="card">
-                        <img src="https://th.bing.com/th/id/OIP.89WHXH-g9dSv6k9I8nxa4wHaHa?rs=1&pid=ImgDetMain" class="card-img-top" alt="Adobe Portfolio">
-                        <div class="card-body">
-                            <h5 class="card-title">Adobe Portfolio</h5>
-                            <p class="card-text">Features: Integrated with Adobe Creative Cloud, it allows users to create a portfolio website with Adobe tools.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
+    <script>
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
 
-    <!-- Bootstrap JS and Popper.js -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        function showPosition(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+
+            // Send coordinates to Flask backend
+            fetch('/get_nearest_bus_stops', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ latitude: latitude, longitude: longitude }),
+            })
+            .then(response => response.json())
+            .then(data => displayBusStops(data));
+        }
+
+        function displayBusStops(busStops) {
+            var busStopsDiv = document.getElementById('nearestBusStops');
+            busStopsDiv.innerHTML = '<h3>Nearest Bus Stops:</h3>';
+
+            if (busStops.length > 0) {
+                var ul = document.createElement('ul');
+                busStops.forEach(function (busStop) {
+                    var li = document.createElement('li');
+                    li.textContent = busStop.name + ' - ' + busStop.distance + ' km';
+                    ul.appendChild(li);
+                });
+                busStopsDiv.appendChild(ul);
+            } else {
+                busStopsDiv.innerHTML += '<p>No bus stops found nearby.</p>';
+            }
+        }
+    </script>
 </body>
 </html>

@@ -59,31 +59,40 @@
             {% endif %}
         {% endwith %}
 
-        {% if schedules %}
-            <table class="table table-striped mt-3">
-                <thead>
-                    <tr>
-                        <th>Departure Location</th>
-                        <th>Destination</th>
-                        <th>Departure Time</th>
-                        <th>Sacco</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for schedule in schedules %}
-                        <tr>
-                            <td>{{ schedule.departure_location }}</td>
-                            <td>{{ schedule.destination }}</td>
-                            <td>{{ schedule.departure_time.strftime('%Y-%m-%d %H:%M') }}</td>
-                            <td>{{ schedule.vehicle.sacco.name }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>No schedules found.</p>
-        {% endif %}
+        <!-- Existing content... -->
 
-        <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+{% if schedules %}
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Departure Location</th>
+                <th>Destination</th>
+                <th>Departure Time</th>
+                <th>Sacco</th>
+                <th>Details</th>  <!-- Add a new column for the Details link -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for schedule in schedules %}
+                <tr>
+                    <td>{{ schedule.departure_location }}</td>
+                    <td>{{ schedule.destination }}</td>
+                    <td>{{ schedule.departure_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ schedule.vehicle.sacco.name }}</td>
+                    <td>
+                        <a href="{{ url_for('schedule_details', schedule_id=schedule.id) }}">View Details</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No schedules found.</p>
+{% endif %}
+
+<a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+
+<!-- Existing content... -->
+
     </div>
 {% endblock %}

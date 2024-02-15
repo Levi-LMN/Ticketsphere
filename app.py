@@ -311,11 +311,18 @@ def sacco_admin_dashboard():
         return render_template('sacco_admin_dashboard.html', user=sacco_admin)
 
 
-@app.route('/driver-dashboard')
+@app.route('/driver_dashboard')
 @login_required
 def driver_dashboard():
-    return render_template('driver_dashboard.html', user=current_user)
+    # Ensure the current user is a driver
+    if current_user.role != 'driver':
+        flash('Permission denied. Only drivers can access this dashboard.', 'danger')
+        return redirect(url_for('home'))
 
+    # Retrieve vehicles associated with the current driver
+    vehicles = current_user.vehicles
+
+    return render_template('driver_dashboard.html', vehicles=vehicles)
 
 @app.route('/admin-dashboard')
 @login_required
@@ -699,6 +706,12 @@ def add_vehicle():
         capacity = form.capacity.data
         driver_id = form.driver_id.data
 
+        # Check if the registration plate already exists
+        existing_vehicle = Vehicle.query.filter_by(registration_plate=registration_plate).first()
+        if existing_vehicle:
+            flash('Vehicle with the same registration plate already exists. Please choose a different one.', 'danger')
+            return render_template('admin/add_vehicle.html', form=form)
+
         vehicle = Vehicle(
             make=make,
             model=model,
@@ -712,11 +725,16 @@ def add_vehicle():
             driver = User.query.get(driver_id)
             vehicle.driver = driver
 
-        db.session.add(vehicle)
-        db.session.commit()
-
-        flash('Vehicle added successfully!', 'success')
-        return redirect(url_for('sacco_admin_dashboard'))
+        try:
+            db.session.add(vehicle)
+            db.session.commit()
+            flash('Vehicle added successfully!', 'success')
+            return redirect(url_for('sacco_admin_dashboard'))
+        except IntegrityError as e:
+            db.session.rollback()
+            flash('Error adding the vehicle. Please check your input and try again.', 'danger')
+            app.logger.error(f"IntegrityError: {str(e)}")
+            # You may want to log the error for further investigation
 
     return render_template('admin/add_vehicle.html', form=form)
 
@@ -782,6 +800,35 @@ def view_vehicles():
 
     return render_template('admin/view_vehicles.html', vehicles=vehicles)
 
+from flask import render_template, url_for
+
+@app.route('/schedule_details/<int:schedule_id>')
+@login_required
+def schedule_details(schedule_id):
+    # Fetch the schedule details based on schedule_id
+    schedule = TravelSchedule.query.get_or_404(schedule_id)
+
+    return render_template('schedule_details.html', schedule=schedule)
+
+@app.route('/checkout/<int:schedule_id>', methods=['GET', 'POST'])
+@login_required
+def checkout(schedule_id):
+    schedule = Schedule.query.get_or_404(schedule_id)
+    form = CheckoutForm()
+
+    if form.validate_on_submit():
+        # Perform actual payment processing here using a payment gateway
+        # For example, you might use Stripe, PayPal, etc.
+        # Ensure to handle sensitive information securely
+
+        # For this example, just simulate a successful payment
+        flash('Payment successful!', 'success')
+
+        # Perform additional steps like generating and downloading the ticket
+        # For simplicity, we'll redirect back to the schedule details page
+        return redirect(url_for('schedule_details', schedule_id=schedule.id))
+
+    return render_template('checkout.html', schedule=schedule, form=form)
 
 if __name__ == '__main__':
     app.run(debug=True)
