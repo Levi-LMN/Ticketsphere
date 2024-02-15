@@ -92,4 +92,10 @@
     vertical-align: top;
 }
 
+/* styles.css */
+.navbar {
+    z-index: 1000; /* Adjust as needed, make sure it's higher than the container z-index */
+}
+
+
 

@@ -4,20 +4,128 @@
 {% block title %}Home - My Flask App{% endblock %}
 
 {% block content %}
-    {% if user.is_authenticated %}
-        <h2>Welcome, {{ user.first_name }}!</h2>
-        <p>This is the user dashboard.</p>
-        <p>You are logged in. Your role is {{ user.role }}.</p>
-        <p><a href="{{ url_for('logout') }}">Logout</a></p>
-    {% else %}
-        <h2>Home</h2>
-        <p>Not logged in. Sign up or log in to access additional features.</p>
-        <p><a href="{{ url_for('register') }}">Sign up</a> | <a href="{{ url_for('login') }}">Log in</a></p>
-    {% endif %}
-    <div>
-        <h3>Quick Links</h3>
-        <ul>
-            <li><a href="{{ url_for('view_all_schedules') }}">View All Travel Schedules</a></li>
-        </ul>
+    <div class="container mt-7">
+        {% if user.is_authenticated %}
+            <div class="jumbotron">
+                <h1 class="display-4">Welcome, {{ user.first_name }}!</h1>
+                <p class="lead">This is your personalized dashboard.</p>
+                <hr class="my-4">
+<!--                <p>You are logged in. Your role is {{ user.role }}.</p>-->
+<!--                <a class="btn btn-primary btn-lg" href="{{ url_for('logout') }}" role="button">Logout</a>-->
+            </div>
+        {% else %}
+            <div class="jumbotron">
+                <h1 class="display-4">Welcome to My Flask App!</h1>
+                <p class="lead">Explore our features by signing up or logging in.</p>
+                <a class="btn btn-success btn-lg" href="{{ url_for('register') }}" role="button">Sign up</a>
+                <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}" role="button">Log in</a>
+            </div>
+        {% endif %}
+
+        <div class="row mt-4">
+            <div class="col-md-4 mb-4">
+    <div class="card border-0 shadow">
+        <div class="card-body text-center">
+            <h3 class="card-title mb-3">Quick Links</h3>
+            <p class="card-text text-muted">Explore quick access links for your convenience.</p>
+            <a href="{{ url_for('view_all_schedules') }}" class="btn btn-primary btn-block mb-2">View Travel Schedules</a>
+            <a href="#" class="btn btn-primary btn-block mb-2">Nearby Bus Stops</a>
+            <a href="#" class="btn btn-primary btn-block">Explore</a>
+        </div>
+    </div>
+</div>
+
+
+            <div class="col-md-8 mb-3 ml-md-4">
+                <h2 class="mb-3">Popular Routes</h2>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <img src="" alt="" class="card-img-top">
+                            <div class="card-body">
+                                <h3 class="card-title">Route 1</h3>
+                                <p class="card-text">Route 1 description</p>
+                                <a href="#" class="btn btn-primary">View Schedule</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Repeat the structure for Route 2 and Route 3 -->
+                    <!-- Route 2 -->
+<div class="col-md-4">
+    <div class="card">
+        <img src="" alt="" class="card-img-top">
+        <div class="card-body">
+            <h3 class="card-title">Route 2</h3>
+            <p class="card-text">Route 2 description</p>
+            <a href="#" class="btn btn-primary">View Schedule</a>
+        </div>
+    </div>
+</div>
+
+<!-- Route 3 -->
+<div class="col-md-4">
+    <div class="card">
+        <img src="" alt="" class="card-img-top">
+        <div class="card-body">
+            <h3 class="card-title">Route 3</h3>
+            <p class="card-text">Route 3 description</p>
+            <a href="#" class="btn btn-primary">View Schedule</a>
+        </div>
+    </div>
+</div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-5">
+    <h2 class="text-center mb-4">Upcoming Events</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow">
+                <img src="https://placekitten.com/400/200" class="card-img-top" alt="Event 1 Image">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Event 1</h5>
+                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <small class="text-muted">Date: February 25, 2024</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow">
+                <img src="https://placekitten.com/400/200" class="card-img-top" alt="Event 2 Image">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Event 2</h5>
+                    <p class="card-text">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <small class="text-muted">Date: March 10, 2024</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow">
+                <img src="https://placekitten.com/400/200" class="card-img-top" alt="Event 3 Image">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Event 3</h5>
+                    <p class="card-text">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <small class="text-muted">Date: March 18, 2024</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <div class="mt-4">
+            <h2>Recent News</h2>
+            <div class="card-deck">
+                <!-- Repeat the structure for News 1, News 2, and News 3 -->
+            </div>
+        </div>
     </div>
 {% endblock %}

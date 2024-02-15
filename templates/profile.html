@@ -5,12 +5,69 @@
 {% block header %}User Profile{% endblock %}
 
 {% block content %}
-    <h2>Welcome, {{ user.first_name }}!</h2>
+    <div class="container mt-4">
+        <h2 class="mb-4">Welcome, {{ user.first_name }}!</h2>
 
-    <p><strong>ID:</strong> {{ user.id }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>Role:</strong> {{ user.role }}</p>
-    <p><strong>Date Created:</strong> {{ user.date_created }}</p>
-    <p><strong>Token:</strong> {{ user.token }}</p>
-    <p><strong>Verified:</strong> {{ "Yes" if user.is_verified else "No" }}</p>
+        <div class="row">
+            <div class="col-md-6">
+                <!--name card-->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Name</h5>
+                        <p class="card-text">{{ user.first_name }} {{ user.last_name }}</p>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">ID</h5>
+                        <p class="card-text">{{ user.id }}</p>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Email</h5>
+                        <p class="card-text">{{ user.email }}</p>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Role</h5>
+                        <p class="card-text">{{ user.role }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Date Created</h5>
+                        <p class="card-text">{{ user.date_created }}</p>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Token</h5>
+                        <p class="card-text">{{ user.token }}</p>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Verified</h5>
+                        <p class="card-text">
+                            {% if user.is_verified %}
+                                <span class="badge bg-success">Yes</span>
+                            {% else %}
+                                <span class="badge bg-danger">No</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

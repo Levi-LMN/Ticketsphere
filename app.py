@@ -75,7 +75,6 @@ class Vehicle(db.Model):
     driver = db.relationship('User', backref='vehicles', lazy=True)  # Add the relationship definition
 
 
-
 class TravelSchedule(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     departure_location = db.Column(db.String(255), nullable=False)
@@ -158,6 +157,7 @@ class VehicleForm(FlaskForm):
     driver_id = SelectField('Select Driver', coerce=int, validators=[Optional()])  # Use Optional instead of allow_blank
     submit = SubmitField('Add Vehicle')
 
+
 # Create the database tables
 with app.app_context():
     db.create_all()
@@ -172,6 +172,21 @@ def load_user(user_id):
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
+
+
+# Custom error handler for 500 Internal Server Error
+@app.errorhandler(500)
+def internal_server_error(error):
+    return render_template('500.html'), 500
+
+
+# Route to intentionally raise a server error
+@app.route('/force_error')
+def force_error():
+    # Triggering a division by zero error
+    result = 1 / 0
+    return f"This won't be reached, due to the intentional error above: {result}"
+
 
 @app.route('/about')
 @app.route('/contact')
@@ -539,6 +554,7 @@ def add_sacco():
 
     return render_template('admin/add_sacco.html', form=form)
 
+
 @app.route('/delete_sacco', methods=['GET', 'POST'])
 @login_required
 def delete_sacco():
@@ -561,6 +577,7 @@ def delete_sacco():
             return redirect(url_for('delete_sacco'))
 
     return render_template('admin/delete_sacco.html', saccos=saccos, form=form)
+
 
 # app.py
 @app.route('/select_sacco_admin/<int:sacco_id>', methods=['GET', 'POST'])
@@ -585,6 +602,7 @@ def select_sacco_admin(sacco_id):
 
     return render_template('admin/select_sacco_admin.html', sacco=sacco, users=users)
 
+
 # ...
 
 @app.route('/manage_saccos', methods=['GET', 'POST'])
@@ -601,7 +619,8 @@ def manage_saccos():
     form = ManageSaccoForm()
 
     # Populate choices for the admin field
-    form.admin_id.choices = [(user.id, f'{user.first_name} {user.last_name}') for user in User.query.filter_by(role='sacco_admin').all()]
+    form.admin_id.choices = [(user.id, f'{user.first_name} {user.last_name}') for user in
+                             User.query.filter_by(role='sacco_admin').all()]
 
     if form.validate_on_submit():
         sacco_id = form.sacco_id.data
@@ -618,6 +637,7 @@ def manage_saccos():
         return redirect(url_for('manage_saccos'))
 
     return render_template('admin/manage_saccos.html', saccos=saccos, form=form)
+
 
 # Route to add travel schedules
 @app.route('/add_schedule', methods=['GET', 'POST'])
@@ -646,7 +666,8 @@ def add_schedule():
                 db.session.commit()
 
                 flash('Schedule added successfully', 'success')
-                return redirect(url_for('sacco_admin_dashboard'))  # Replace 'dashboard' with the route for your dashboard
+                return redirect(
+                    url_for('sacco_admin_dashboard'))  # Replace 'dashboard' with the route for your dashboard
             else:
                 flash('Invalid vehicle selected', 'error')
         else:
@@ -655,6 +676,7 @@ def add_schedule():
     # Render the form to add schedules
     sacco_vehicles = current_user.sacco.vehicles
     return render_template('add_schedule.html', sacco_vehicles=sacco_vehicles)
+
 
 @app.route('/add_vehicle', methods=['GET', 'POST'])
 @login_required
@@ -667,7 +689,8 @@ def add_vehicle():
     form = VehicleForm()
 
     # Populate the driver choices for the form
-    form.driver_id.choices = [(user.id, f"{user.first_name} {user.last_name}") for user in User.query.filter_by(role='driver').all()]
+    form.driver_id.choices = [(user.id, f"{user.first_name} {user.last_name}") for user in
+                              User.query.filter_by(role='driver').all()]
 
     if form.validate_on_submit():
         make = form.make.data
@@ -696,6 +719,8 @@ def add_vehicle():
         return redirect(url_for('sacco_admin_dashboard'))
 
     return render_template('admin/add_vehicle.html', form=form)
+
+
 # Route to view travel schedules for a Sacco admin
 @app.route('/view_schedules')
 @login_required
@@ -708,6 +733,7 @@ def view_schedules():
     else:
         flash('User is not associated with a sacco', 'error')
         return redirect(url_for('sacco_admin_dashboard'))  # Replace 'dashboard' with the route for your dashboard
+
 
 # Update the route to handle filtering with unique locations and destinations
 @app.route('/schedules')
@@ -742,6 +768,7 @@ def view_all_schedules():
     return render_template('schedules.html', schedules=schedules, all_saccos=all_saccos,
                            all_locations=all_locations, all_destinations=all_destinations)
 
+
 @app.route('/view_vehicles', methods=['GET'])
 @login_required
 def view_vehicles():
@@ -754,6 +781,7 @@ def view_vehicles():
     vehicles = Vehicle.query.filter_by(sacco=current_user.sacco).all()
 
     return render_template('admin/view_vehicles.html', vehicles=vehicles)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
