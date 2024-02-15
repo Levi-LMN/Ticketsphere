@@ -3,6 +3,9 @@
 ## Overview
 TicketSphere is a comprehensive Public Transport Booking System designed to streamline the booking process for users, manage vehicles across different Saccos, and facilitate secure transactions through M-Pesa. The system includes four panels: Admin, Sacco Admin, User, and Driver, each with specific functionalities to enhance the overall user experience.
 
+## Live Preview
+Visit the [Live Preview](LMN.pythonanywhere.com) to explore TicketSphere.
+
 ## Features
 - **User Management:** Register and authenticate users with distinct roles (User, Sacco Admin, Driver, Admin).
 - **Sacco Management:** Admins can add and delete Saccos, assign Sacco admins, and manage Sacco details.
@@ -49,6 +52,7 @@ TicketSphere is a comprehensive Public Transport Booking System designed to stre
 ## Important Note
 - The application is currently in debug mode (`app.run(debug=True)`). In a production environment, set `debug` to `False`.
 - Update the email configuration (`MAIL_SERVER`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, etc.) in the `app.py` file for email functionality.
+
 
 ## Contributions
 Contributions are welcome! Feel free to open issues, provide feedback, or submit pull requests to enhance the TicketSphere application.
