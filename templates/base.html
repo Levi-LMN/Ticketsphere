@@ -2,48 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}Ticketsphere{% endblock %}</title>
     <link rel="stylesheet" href="../static/css/style.css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Font Awesome -->
-    <!-- Add these lines to your base template or HTML file -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+Wy8RPqOLFX3pU5hCBVS3o2J9jRVzab1LRL" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
 </head>
 <body>
 
 <div class="wrap">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark w-100 position-fixed border-bottom border-white">
-            <div class="container-fluid">
-                <a class="navbar-brand fw-bold" href="{{ url_for('home') }}">Ticketsphere</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Home</a>
-                        </li>
-                        <li class="nav-item">
-                             <a class="nav-link" href="/about">About us</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/contact">Contact us</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/parcels">Parcels</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/bus_hire">Bus Hire</a>
-                        </li>
-                       <li class="nav-item dropdown">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark w-100 position-fixed border-bottom border-white">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{{ url_for('home') }}">Ticketsphere</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">Contact us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/parcels">Parcels</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/bus_hire">Bus Hire</a>
+                    </li>
+                    <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             {% if current_user.is_authenticated %}
                                 {{ current_user.first_name }}'s Account
@@ -61,20 +53,14 @@
                             {% endif %}
                         </ul>
                     </li>
-
-                    </ul>
-                    <form class="d-flex">
-                        <input class="form-control bg-transparent text-white me-2" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-light" type="submit">Search</button>
-                    </form>
-                </div>
+                </ul>
+                <form class="d-flex">
+                    <input class="form-control bg-transparent text-white me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-light" type="submit">Search</button>
+                </form>
             </div>
-        </nav>
-    <br>
-    <br>
-    <br>
-
-    </div>
+        </div>
+    </nav>
 
     <!-- Flash messages -->
     {% with messages = get_flashed_messages() %}
@@ -88,27 +74,25 @@
                 {% endfor %}
             </div>
         {% endif %}
+    <br>
+    <br>
+
     {% endwith %}
 
     {% block content %}
+
 
     {% endblock %}
 </div>
 
 <!-- Footer block -->
-<br>
-            <br>
 {% block footer %}
     <footer class="footer bg-dark text-light py-2">
-
         <div class="container text-center">
-
             <span>&copy; 2024 <a href="https://github.com/Levi-LMN/Ticketsphere">Ticketsphere</a> All rights reserved. </span>
         </div>
     </footer>
 {% endblock %}
-
-
 
 </body>
 </html>

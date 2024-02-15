@@ -1,21 +1,26 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Under Maintenance - Your Website Title{% endblock %}
+{% block title %}Under Maintenance - Ticketsphere{% endblock %}
 
 {% block content %}
-    <div class="container mt-5">
+    <div class="container mt-5 text-center">
         <div class="jumbotron">
             <h1 class="display-4">Under Maintenance</h1>
-            <p class="lead">We apologize for the inconvenience, but this page is currently undergoing maintenance. Please check back later.</p>
+            <p class="lead">We apologize for the inconvenience, but this page is currently undergoing maintenance.</p>
+            <p class="mb-4">Please check back later. Thank you for your patience!</p>
 
-            <hr class="my-4">
+            <!-- Display the text representation of emoji_events -->
+            <div class="mt-4">
+                <p class="text-muted">In the meantime, here's a fun fact:</p>
+                <p class="h5 mb-4">Did you know? Ticketsphere has served over 1 million happy customers!</p>
 
-            <div class="alert alert-warning" role="alert">
-                <strong>Status:</strong> Under Maintenance
-            </div>
+                <!-- Display the text representation of emoji_events -->
+                <div class="alert alert-warning" role="alert">
+                    <span class="text-muted" style="font-size: 36px;">🎉</span>
+                    <p class="text-muted mt-2">Exciting updates coming soon</p>
+                </div>
 
-            <div class="alert alert-info" role="alert">
-                <strong>Estimated Time:</strong> 1 hour
+
             </div>
         </div>
     </div>
