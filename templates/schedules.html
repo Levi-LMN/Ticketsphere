@@ -7,12 +7,12 @@
 {% block content %}
     <div class="container mt-4">
         <h2>All Travel Schedules</h2>
-        <p>Where would you like to go</p>
+        <p>Where would you like to go?</p>
 
         <form method="get" action="{{ url_for('view_all_schedules') }}" class="mb-3">
-            <div class="row">
+            <div class="row g-3">
                 <div class="col-md-4">
-                    <label for="filter_location">Filter by Departure Location:</label>
+                    <label for="filter_location" class="form-label">Filter by Departure Location:</label>
                     <select name="filter_location" class="form-select">
                         <option value="">All Locations</option>
                         {% for location in all_locations %}
@@ -22,7 +22,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label for="filter_destination">Filter by Destination:</label>
+                    <label for="filter_destination" class="form-label">Filter by Destination:</label>
                     <select name="filter_destination" class="form-select">
                         <option value="">All Destinations</option>
                         {% for destination in all_destinations %}
@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label for="filter_sacco">Filter by Sacco:</label>
+                    <label for="filter_sacco" class="form-label">Filter by Sacco:</label>
                     <select name="filter_sacco" class="form-select">
                         <option value="">All Saccos</option>
                         {% for sacco in all_saccos %}
@@ -59,40 +59,35 @@
             {% endif %}
         {% endwith %}
 
-        <!-- Existing content... -->
+        {% if schedules %}
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>Departure Location</th>
+                        <th>Destination</th>
+                        <th>Departure Time</th>
+                        <th>Sacco</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for schedule in schedules %}
+                        <tr>
+                            <td>{{ schedule.departure_location }}</td>
+                            <td>{{ schedule.destination }}</td>
+                            <td>{{ schedule.departure_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ schedule.vehicle.sacco.name }}</td>
+                            <td>
+                                <a href="{{ url_for('schedule_details', schedule_id=schedule.id) }}" class="btn btn-info btn-sm">View Details</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No schedules found.</p>
+        {% endif %}
 
-{% if schedules %}
-    <table class="table table-striped mt-3">
-        <thead>
-            <tr>
-                <th>Departure Location</th>
-                <th>Destination</th>
-                <th>Departure Time</th>
-                <th>Sacco</th>
-                <th>Details</th>  <!-- Add a new column for the Details link -->
-            </tr>
-        </thead>
-        <tbody>
-            {% for schedule in schedules %}
-                <tr>
-                    <td>{{ schedule.departure_location }}</td>
-                    <td>{{ schedule.destination }}</td>
-                    <td>{{ schedule.departure_time.strftime('%Y-%m-%d %H:%M') }}</td>
-                    <td>{{ schedule.vehicle.sacco.name }}</td>
-                    <td>
-                        <a href="{{ url_for('schedule_details', schedule_id=schedule.id) }}">View Details</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <p>No schedules found.</p>
-{% endif %}
-
-<a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
-
-<!-- Existing content... -->
-
+        <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
     </div>
 {% endblock %}
