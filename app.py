@@ -165,6 +165,14 @@ def load_user(user_id):
 def page_not_found(error):
     return render_template('404.html'), 404
 
+@app.route('/about')
+@app.route('/contact')
+@app.route('/parcels')
+@app.route('/bus_hire')
+def under_construction():
+    clicked_page = request.path[1:].capitalize()  # Extract page name from URL
+    return render_template('under_construction.html', clicked_page=clicked_page)
+
 
 @app.route('/')
 @login_required
