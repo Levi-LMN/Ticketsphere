@@ -16,6 +16,9 @@ from flask import request
 from flask_wtf import FlaskForm
 from wtforms import StringField, DateTimeField, SelectField, SubmitField
 from wtforms.validators import DataRequired
+from wtforms import StringField, IntegerField, SelectField, SubmitField
+from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Optional
 
 app = Flask(__name__)
 
@@ -66,7 +69,11 @@ class Vehicle(db.Model):
     make = db.Column(db.String(50), nullable=False)
     model = db.Column(db.String(50), nullable=False)
     registration_plate = db.Column(db.String(20), unique=True, nullable=False)
+    capacity = db.Column(db.Integer, nullable=False)
     sacco_id = db.Column(db.Integer, db.ForeignKey('sacco.id'), nullable=False)
+    driver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # Make the driver relationship nullable
+    driver = db.relationship('User', backref='vehicles', lazy=True)  # Add the relationship definition
+
 
 
 class TravelSchedule(db.Model):
@@ -147,8 +154,9 @@ class VehicleForm(FlaskForm):
     make = StringField('Make', validators=[DataRequired()])
     model = StringField('Model', validators=[DataRequired()])
     registration_plate = StringField('Registration Plate', validators=[DataRequired()])
+    capacity = IntegerField('Capacity', validators=[DataRequired()])
+    driver_id = SelectField('Select Driver', coerce=int, validators=[Optional()])  # Use Optional instead of allow_blank
     submit = SubmitField('Add Vehicle')
-
 
 # Create the database tables
 with app.app_context():
@@ -658,17 +666,28 @@ def add_vehicle():
 
     form = VehicleForm()
 
+    # Populate the driver choices for the form
+    form.driver_id.choices = [(user.id, f"{user.first_name} {user.last_name}") for user in User.query.filter_by(role='driver').all()]
+
     if form.validate_on_submit():
         make = form.make.data
         model = form.model.data
         registration_plate = form.registration_plate.data
+        capacity = form.capacity.data
+        driver_id = form.driver_id.data
 
         vehicle = Vehicle(
             make=make,
             model=model,
             registration_plate=registration_plate,
+            capacity=capacity,
             sacco=current_user.sacco  # Associate the vehicle with the Sacco admin's Sacco
         )
+
+        # Associate the driver with the vehicle if a driver is selected
+        if driver_id:
+            driver = User.query.get(driver_id)
+            vehicle.driver = driver
 
         db.session.add(vehicle)
         db.session.commit()
@@ -677,7 +696,6 @@ def add_vehicle():
         return redirect(url_for('sacco_admin_dashboard'))
 
     return render_template('admin/add_vehicle.html', form=form)
-
 # Route to view travel schedules for a Sacco admin
 @app.route('/view_schedules')
 @login_required
@@ -724,7 +742,18 @@ def view_all_schedules():
     return render_template('schedules.html', schedules=schedules, all_saccos=all_saccos,
                            all_locations=all_locations, all_destinations=all_destinations)
 
+@app.route('/view_vehicles', methods=['GET'])
+@login_required
+def view_vehicles():
+    # Ensure the current user is associated with a Sacco
+    if not current_user.sacco:
+        flash('You are not associated with a Sacco.', 'danger')
+        return redirect(url_for('home'))
 
+    # Retrieve all vehicles associated with the user's Sacco
+    vehicles = Vehicle.query.filter_by(sacco=current_user.sacco).all()
+
+    return render_template('admin/view_vehicles.html', vehicles=vehicles)
 
 if __name__ == '__main__':
     app.run(debug=True)
