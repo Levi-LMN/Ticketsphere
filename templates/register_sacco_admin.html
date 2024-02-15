@@ -4,24 +4,63 @@
 {% block title %}Register as Sacco Admin{% endblock %}
 
 {% block content %}
-  <h2>Register as Sacco Admin</h2>
-  <form method="post">
-    {{ form.hidden_tag() }}
-    <label for="first_name">First Name:</label>
-    {{ form.first_name }}
-    <br>
-    <label for="last_name">Last Name:</label>
-    {{ form.last_name }}
-    <br>
-    <label for="email">Email:</label>
-    {{ form.email }}
-    <br>
-    <label for="password">Password:</label>
-    {{ form.password }}
-    <br>
-    <label for="sacco_role">Sacco Role:</label>
-    {{ form.sacco_role }}
-    <br>
-    <button type="submit">Register</button>
-  </form>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title text-center mb-4">Register as Sacco Admin</h2>
+            <form method="post">
+              {{ form.hidden_tag() }}
+
+              <div class="mb-3">
+                <label for="first_name" class="form-label">First Name:</label>
+                {{ form.first_name(class="form-control") }}
+              </div>
+
+              <div class="mb-3">
+                <label for="last_name" class="form-label">Last Name:</label>
+                {{ form.last_name(class="form-control") }}
+              </div>
+
+              <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                {{ form.email(class="form-control") }}
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label">Password:</label>
+                <div class="input-group">
+                  <input type="password" name="password" id="password" class="form-control" required>
+                </div>
+              </div>
+
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="showPassword" onclick="togglePassword()">
+                <label class="form-check-label" for="showPassword">Show Password</label>
+              </div>
+
+              <div class="mb-3">
+                <label for="sacco_role" class="form-label">Sacco Role:</label>
+                {{ form.sacco_role(class="form-control") }}
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block">Register</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      var passwordInput = document.getElementById("password");
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+      } else {
+        passwordInput.type = "password";
+      }
+    }
+  </script>
 {% endblock %}

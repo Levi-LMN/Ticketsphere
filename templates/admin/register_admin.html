@@ -4,24 +4,63 @@
 {% block title %}Register as Admin{% endblock %}
 
 {% block content %}
-  <h2>Register as Admin</h2>
-  <form method="post">
-    {{ form.hidden_tag() }}
-    <label for="first_name">First Name:</label>
-    {{ form.first_name }}
-    <br>
-    <label for="last_name">Last Name:</label>
-    {{ form.last_name }}
-    <br>
-    <label for="email">Email:</label>
-    {{ form.email }}
-    <br>
-    <label for="password">Password:</label>
-    {{ form.password }}
-    <br>
-    <label for="role">Role:</label>
-    {{ form.role }}
-    <br>
-    <button type="submit">Register</button>
-  </form>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title text-center mb-4">Register as Admin</h2>
+            <form method="post">
+              {{ form.hidden_tag() }}
+
+              <div class="mb-3">
+                <label for="first_name" class="form-label">First Name:</label>
+                {{ form.first_name(class="form-control") }}
+              </div>
+
+              <div class="mb-3">
+                <label for="last_name" class="form-label">Last Name:</label>
+                {{ form.last_name(class="form-control") }}
+              </div>
+
+              <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                {{ form.email(class="form-control") }}
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label">Password:</label>
+                <div class="input-group">
+                  <input type="password" name="password" id="password" class="form-control" required>
+                </div>
+              </div>
+
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="showPassword" onclick="togglePassword()">
+                <label class="form-check-label" for="showPassword">Show Password</label>
+              </div>
+
+              <div class="mb-3">
+                <label for="role" class="form-label">Role:</label>
+                {{ form.role(class="form-control") }}
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block">Register</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      var passwordInput = document.getElementById("password");
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+      } else {
+        passwordInput.type = "password";
+      }
+    }
+  </script>
 {% endblock %}

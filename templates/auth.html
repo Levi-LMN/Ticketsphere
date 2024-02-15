@@ -4,13 +4,57 @@
 {% block title %}Authentication{% endblock %}
 
 {% block content %}
-  <h2>Authentication</h2>
-  <p>Choose an option below to register:</p>
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">Authentication</h2>
 
-  <ul>
-    <li><a href="{{ url_for('register_user') }}">Register as User</a></li>
-    <li><a href="{{ url_for('register_driver') }}">Register as Driver</a></li>
-    <li><a href="{{ url_for('register_sacco_admin') }}">Register as Sacco Admin</a></li>
-    <li><a href="{{ url_for('register_admin') }}">Register as Admin</a></li>
-  </ul>
+    <div class="row justify-content-center">
+      <div class="col-md-4 mb-4">
+        <div class="card border-primary shadow rounded d-flex flex-column justify-content-between">
+          <div class="card-body text-center">
+            <h5 class="card-title mb-3">Register as User</h5>
+            <p class="card-text mb-4">Become a registered user.</p>
+          </div>
+          <div class="card-footer text-center">
+            <a href="{{ url_for('register_user') }}" class="btn btn-primary">Register</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="card border-success shadow rounded d-flex flex-column justify-content-between">
+          <div class="card-body text-center">
+            <h5 class="card-title mb-3">Register as Driver</h5>
+            <p class="card-text mb-4">Join as a registered driver.</p>
+          </div>
+          <div class="card-footer text-center">
+            <a href="{{ url_for('register_driver') }}" class="btn btn-success">Register</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="card border-info shadow rounded d-flex flex-column justify-content-between">
+          <div class="card-body text-center">
+            <h5 class="card-title mb-3">Register as Sacco Admin</h5>
+            <p class="card-text mb-4">Register as a Sacco administrator.</p>
+          </div>
+          <div class="card-footer text-center">
+            <a href="{{ url_for('register_sacco_admin') }}" class="btn btn-info">Register</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="card border-warning shadow rounded d-flex flex-column justify-content-between">
+          <div class="card-body text-center">
+            <h5 class="card-title mb-3">Register as Admin</h5>
+            <p class="card-text mb-4">Admin registration option.</p>
+          </div>
+          <div class="card-footer text-center">
+            <a href="{{ url_for('register_admin') }}" class="btn btn-warning">Register</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
