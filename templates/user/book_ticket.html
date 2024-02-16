@@ -1,0 +1,32 @@
+<!-- user/book_ticket.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Book a Ticket</h2>
+  <p>Available Seats:</p>
+  <form method="post" action="{{ url_for('book_ticket', schedule_id=travel_schedule.id) }}">
+    {{ form.csrf_token }}
+    <label for="seat_number">Select Seat:</label>
+    {{ form.seat_number(class="form-control", placeholder="Select Seat", required="required") }}
+    {{ form.submit(class="btn btn-primary") }}
+  </form>
+
+  {% if booked_seats %}
+    <p>Booked Seats: {{ booked_seats }}</p>
+  {% endif %}
+
+  <script>
+    // Assuming booked_seats is a list of booked seats, modify as per your data structure
+    var bookedSeats = {{ booked_seats|tojson|safe }};
+    var seatDropdown = document.getElementById("seat_number");
+
+    // Remove booked seats from the dropdown options
+    bookedSeats.forEach(function(bookedSeat) {
+      var optionToRemove = seatDropdown.querySelector('option[value="' + bookedSeat + '"]');
+      if (optionToRemove) {
+        optionToRemove.remove();
+      }
+    });
+  </script>
+
+{% endblock %}

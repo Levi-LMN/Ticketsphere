@@ -19,6 +19,9 @@ from flask import render_template, make_response
 import pdfkit
 from wtforms import StringField, DateTimeField, SelectField, FloatField, SubmitField
 from wtforms.validators import DataRequired, Optional
+# Import necessary modules
+from flask import send_file
+
 
 app = Flask(__name__)
 
@@ -87,6 +90,24 @@ class TravelSchedule(db.Model):
     price = db.Column(db.Float, nullable=False)  # Add the price field
     vehicle_id = db.Column(db.Integer, db.ForeignKey('vehicle.id'), nullable=False)
     vehicle = db.relationship('Vehicle', backref='travel_schedules', lazy=True)
+
+
+# Ticket model
+class Ticket(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', backref='tickets', lazy=True)
+    travel_schedule_id = db.Column(db.Integer, db.ForeignKey('travel_schedule.id'), nullable=False)
+    travel_schedule = db.relationship('TravelSchedule', backref='tickets', lazy=True)
+    booking_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    seat_number = db.Column(db.String(20), nullable=True)
+    price = db.Column(db.Float, nullable=True)
+    # Add any other additional fields you want to store for a ticket
+
+    def __repr__(self):
+        return f"Ticket(id={self.id}, user={self.user}, travel_schedule={self.travel_schedule}, " \
+               f"booking_time={self.booking_time}, seat_number={self.seat_number}, price={self.price})"
+
 
 
 # Admin registration form
@@ -172,6 +193,10 @@ class VehicleForm(FlaskForm):
     driver_id = SelectField('Select Driver', coerce=int, validators=[Optional()])  # Use Optional instead of allow_blank
     submit = SubmitField('Add Vehicle')
 
+
+class BookTicketForm(FlaskForm):
+    seat_number = SelectField('Select Seat', coerce=int)
+    submit = SubmitField('Book Ticket')
 
 # Create the database tables
 with app.app_context():
@@ -817,6 +842,81 @@ def checkout(schedule_id):
 
     return render_template('user/checkout.html', schedule=schedule)
 
+# Route to book a ticket
+@app.route('/book_ticket/<int:schedule_id>', methods=['GET', 'POST'])
+@login_required
+def book_ticket(schedule_id):
+    travel_schedule = TravelSchedule.query.get_or_404(schedule_id)
+    form = BookTicketForm()
+
+    # Get the list of booked seat numbers from the Ticket model
+    booked_seat_numbers = [ticket.seat_number for ticket in travel_schedule.tickets if ticket.seat_number is not None]
+
+    # Exclude seats that are already booked, including None
+    available_seats = [seat for seat in range(1, travel_schedule.vehicle.capacity + 1) if seat not in booked_seat_numbers]
+
+    # Set form choices excluding booked seats
+    form.seat_number.choices = [(seat, seat) for seat in available_seats]
+
+    if request.method == 'POST' and form.validate_on_submit():
+        # Check if the vehicle associated with the travel schedule exists
+        if not travel_schedule.vehicle:
+            flash('No vehicle assigned to this travel schedule', 'error')
+            return redirect(url_for('user_dashboard'))
+
+        # Check if the vehicle has available seats
+        if len(travel_schedule.tickets) >= travel_schedule.vehicle.capacity:
+            flash('This vehicle has reached its capacity. No available seats for this travel schedule', 'error')
+            return redirect(url_for('user_dashboard'))
+
+        # Assign the selected seat number from the form
+        selected_seat = int(form.seat_number.data)
+
+        # Check if the selected seat is already booked
+        if selected_seat not in available_seats:
+            flash('This seat is already booked. Please choose another seat.', 'error')
+            return redirect(url_for('book_ticket', schedule_id=schedule_id))
+
+        # Create a new ticket associated with the current user and the selected travel schedule
+        new_ticket = Ticket(
+            user=current_user,
+            travel_schedule=travel_schedule,
+            booking_time=datetime.utcnow(),
+            seat_number=selected_seat,
+            price=travel_schedule.price  # Use the price from the travel schedule
+        )
+
+        db.session.add(new_ticket)
+        db.session.commit()
+
+        # Update the booked seats after creating a new ticket
+        booked_seat_numbers.append(selected_seat)
+        available_seats = [seat for seat in range(1, travel_schedule.vehicle.capacity + 1) if seat not in booked_seat_numbers]
+        form.seat_number.choices = [(seat, seat) for seat in available_seats]
+
+        flash('Ticket booked successfully', 'success')
+        # Redirect to the ticket download page with the newly created ticket's ID
+        return redirect(url_for('download_ticket', ticket_id=new_ticket.id))
+
+    # Render the form to book a ticket with the list of available seats
+    return render_template('user/book_ticket.html', travel_schedule=travel_schedule, form=form, booked_seats=booked_seat_numbers)
+
+# Route to handle ticket download page
+@app.route('/download_ticket/<int:ticket_id>')
+@login_required
+def download_ticket(ticket_id):
+    # Retrieve the ticket from the database
+    ticket = Ticket.query.get_or_404(ticket_id)
+
+    # Check if the ticket belongs to the current user
+    if ticket.user != current_user:
+        abort(403)  # Forbidden
+
+    # Retrieve the associated travel schedule for additional details
+    travel_schedule = ticket.travel_schedule
+
+    # Render the download_ticket template with the ticket and schedule details
+    return render_template('user/download_ticket.html', ticket=ticket, travel_schedule=travel_schedule)
 
 if __name__ == '__main__':
     app.run(debug=True)

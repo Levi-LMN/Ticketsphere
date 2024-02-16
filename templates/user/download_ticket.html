@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Bus Ticket{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-info text-white text-center">
+            <h2 class="mb-4">Ticketsphere</h2>
+            <h4>Bus Ticket</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <h3>Travel Schedule Information</h3>
+                    <ul class="list-group">
+                        <li class="list-group-item"><strong>Departure Location:</strong> {{ travel_schedule.departure_location }}</li>
+                        <li class="list-group-item"><strong>Destination:</strong> {{ travel_schedule.destination }}</li>
+                        <li class="list-group-item"><strong>Departure Time:</strong> {{ travel_schedule.departure_time.strftime('%Y-%m-%d %H:%M') }}</li>
+                        <li class="list-group-item"><strong>Sacco:</strong> {{ travel_schedule.vehicle.sacco.name }}</li>
+                        <li class="list-group-item"><strong>Price:</strong> {{ travel_schedule.price }}</li>
+                        <li class="list-group-item"><strong>Driver:</strong> {{ travel_schedule.vehicle.driver.first_name }} {{ travel_schedule.vehicle.driver.last_name }}</li>
+                        <li class="list-group-item"><strong>Email:</strong> {{ travel_schedule.vehicle.driver.email }}</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3>Your Information</h3>
+                    <ul class="list-group">
+                        <li class="list-group-item"><strong>Your Full Name:</strong> {{ current_user.first_name }} {{ current_user.last_name }}</li>
+                        <li class="list-group-item"><strong>Your Email:</strong> {{ current_user.email }}</li>
+                    </ul>
+                    <h3>Ticket info</h3>
+                    <ul class="list-group">
+                        <li class="list-group-item"><strong>Ticket ID</strong> {{ ticket.id }}</li>
+                        <li class="list-group-item"><strong>Seat number</strong> {{ ticket.seat_number }}</li>
+                        <li class="list-group-item"><strong>Booking time</strong> {{ ticket.booking_time }}</li>
+                        <li class="list-group-item"><strong>Ticket price</strong> {{ ticket.price }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <a href="#" id="download-btn" class="btn btn-primary btn-download">Download Ticket</a>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+<script>
+    function handleClick() {
+        document.getElementById('download-btn').removeEventListener('click', handleClick);
+
+        var cardClone = document.querySelector('.card').cloneNode(true);
+        cardClone.querySelector('.card-footer').remove();
+
+        cardClone.style.width = '80%';
+        cardClone.style.margin = 'auto';
+        cardClone.style.padding = '20px';
+
+        setTimeout(function () {
+            document.body.appendChild(cardClone);
+
+            setTimeout(function () {
+                document.body.removeChild(cardClone);
+                html2pdf(cardClone);
+
+                var downloadBtn = document.getElementById('download-btn');
+                downloadBtn.textContent = 'Redownload Ticket';
+                downloadBtn.classList.remove('btn-primary');
+                downloadBtn.classList.add('btn-danger');
+
+                downloadBtn.addEventListener('click', handleClick);
+            }, 500);
+        }, 200);
+    }
+
+    document.getElementById('download-btn').addEventListener('click', handleClick);
+</script>
+{% endblock %}
+
+{% endblock %}
