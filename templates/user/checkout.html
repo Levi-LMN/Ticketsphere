@@ -32,7 +32,7 @@
             </div>
         </div>
         <div class="card-footer text-center">
-            <a href="#" id="download-btn" class="btn btn-primary">Download Ticket</a>
+            <button id="download-btn" class="btn btn-primary">Download Ticket</button>
         </div>
     </div>
 </div>
@@ -41,19 +41,47 @@
 <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
 <script>
     document.getElementById('download-btn').addEventListener('click', function () {
-        var cardClone = document.querySelector('.card').cloneNode(true);
-        cardClone.querySelector('.card-footer').remove(); // Remove the footer (download button)
+        // Check if the download is already in progress
+        var isDownloadInProgress = document.getElementById('download-btn').hasAttribute('data-downloading');
 
-        // Customize the styles for the downloaded PDF
-        cardClone.style.width = '80%';
-        cardClone.style.margin = 'auto';
-        cardClone.style.padding = '20px';
+        if (!isDownloadInProgress) {
+            // Add an attribute to mark that the download is in progress
+            document.getElementById('download-btn').setAttribute('data-downloading', 'true');
 
-        // Delay for a moment before generating the PDF to allow for rendering
-        setTimeout(function () {
-            html2pdf(cardClone);
-        }, 100);
+            var cardClone = document.querySelector('.card').cloneNode(true);
+            cardClone.querySelector('.card-footer').remove(); // Remove the footer (download button)
+
+            // Customize the styles for the downloaded PDF
+            cardClone.style.width = '80%';
+            cardClone.style.margin = 'auto';
+            cardClone.style.padding = '20px';
+
+            // Delay for a moment before generating the PDF to allow for rendering
+            setTimeout(function () {
+                // Append the cloned content to the document body for inspection
+                document.body.appendChild(cardClone);
+
+                // Delay further before generating the PDF
+                setTimeout(function () {
+                    // Remove the cloned content from the document body
+                    document.body.removeChild(cardClone);
+
+                    // Remove the attribute to allow for future downloads
+                    document.getElementById('download-btn').removeAttribute('data-downloading');
+
+                    // Change button text and style after download
+                    document.getElementById('download-btn').innerText = 'Redownload Ticket';
+                    document.getElementById('download-btn').classList.remove('btn-primary');
+                    document.getElementById('download-btn').classList.add('btn-danger');
+
+                    // Generate the PDF
+                    html2pdf(cardClone);
+                }, 500); // Increase the delay to 500 milliseconds or more
+            }, 200); // Increase the initial delay to 200 milliseconds or more
+        }
     });
 </script>
 {% endblock %}
+
+
 {% endblock %}
