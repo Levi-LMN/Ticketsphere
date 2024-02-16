@@ -17,6 +17,7 @@
                     <li class="list-group-item"><strong>Destination:</strong> {{ schedule.destination }}</li>
                     <li class="list-group-item"><strong>Departure Time:</strong> {{ schedule.departure_time.strftime('%Y-%m-%d %H:%M') }}</li>
                     <li class="list-group-item"><strong>Sacco:</strong> {{ schedule.vehicle.sacco.name }}</li>
+                    <li class="list-group-item"><strong>Price:</strong> {{ schedule.price }}</li>
                     <li class="list-group-item"><strong>Driver:</strong> {{ schedule.vehicle.driver.first_name }} {{ schedule.vehicle.driver.last_name }}</li>
                     <li class="list-group-item"><strong>Email:</strong> {{ schedule.vehicle.driver.email }}</li>
                 </ul>

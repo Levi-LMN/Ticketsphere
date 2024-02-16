@@ -17,7 +17,8 @@ from wtforms.validators import DataRequired, Optional
 from flask import render_template, url_for
 from flask import render_template, make_response
 import pdfkit
-
+from wtforms import StringField, DateTimeField, SelectField, FloatField, SubmitField
+from wtforms.validators import DataRequired, Optional
 
 app = Flask(__name__)
 
@@ -83,6 +84,7 @@ class TravelSchedule(db.Model):
     departure_location = db.Column(db.String(255), nullable=False)
     destination = db.Column(db.String(255), nullable=False)
     departure_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    price = db.Column(db.Float, nullable=False)  # Add the price field
     vehicle_id = db.Column(db.Integer, db.ForeignKey('vehicle.id'), nullable=False)
     vehicle = db.relationship('Vehicle', backref='travel_schedules', lazy=True)
 
@@ -156,6 +158,7 @@ class TravelScheduleForm(FlaskForm):
     departure_location = StringField('Departure Location', validators=[DataRequired()])
     destination = StringField('Destination', validators=[DataRequired()])
     departure_time = DateTimeField('Departure Time', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    price = FloatField('Price', validators=[DataRequired()])  # Add the price field
     vehicle_id = SelectField('Select Vehicle', coerce=int, validators=[DataRequired()])
     submit = SubmitField('Add Schedule')
 
@@ -317,7 +320,7 @@ def sacco_admin_dashboard():
     # Check if the Sacco admin is assigned to a Sacco
     if sacco_admin.sacco:
         assigned_sacco = sacco_admin.sacco.name
-        return render_template('sacco_admin_dashboard.html', user=sacco_admin, assigned_sacco=assigned_sacco)
+        return render_template('sacco_admin/sacco_admin_dashboard.html', user=sacco_admin, assigned_sacco=assigned_sacco)
     else:
         flash('You are not assigned to any Sacco.', 'warning')
         return render_template('sacco_admin/sacco_admin_dashboard.html', user=sacco_admin)
@@ -648,26 +651,30 @@ def add_schedule():
         sacco = current_user.sacco
         vehicle_id = request.form.get('vehicle_id')  # Assuming you have a form field for selecting a vehicle
 
-        if sacco and vehicle_id:
-            vehicle = Vehicle.query.filter_by(id=vehicle_id, sacco=sacco).first()
-            if vehicle:
-                new_schedule = TravelSchedule(
-                    departure_location=departure_location,
-                    destination=destination,
-                    departure_time=departure_time,
-                    vehicle=vehicle
-                )
+        if sacco:
+            if vehicle_id:
+                vehicle = Vehicle.query.filter_by(id=vehicle_id, sacco=sacco).first()
+                if vehicle:
+                    new_schedule = TravelSchedule(
+                        departure_location=departure_location,
+                        destination=destination,
+                        departure_time=departure_time,
+                        price=request.form.get('price'),  # Add the price field
+                        vehicle=vehicle
+                    )
 
-                db.session.add(new_schedule)
-                db.session.commit()
+                    db.session.add(new_schedule)
+                    db.session.commit()
 
-                flash('Schedule added successfully', 'success')
-                return redirect(
-                    url_for('sacco_admin_dashboard'))  # Replace 'dashboard' with the route for your dashboard
+                    flash('Schedule added successfully', 'success')
+                    return redirect(
+                        url_for('sacco_admin_dashboard'))  # Replace 'dashboard' with the route for your dashboard
+                else:
+                    flash('Invalid vehicle selected', 'error')
             else:
-                flash('Invalid vehicle selected', 'error')
+                flash('Please select a vehicle', 'error')
         else:
-            flash('User is not associated with a sacco or vehicle is not provided', 'error')
+            flash('User is not associated with a sacco', 'error')
 
     # Render the form to add schedules
     sacco_vehicles = current_user.sacco.vehicles
@@ -725,7 +732,7 @@ def add_vehicle():
             app.logger.error(f"IntegrityError: {str(e)}")
             # You may want to log the error for further investigation
 
-    return render_template('admin/add_vehicle.html', form=form)
+    return render_template('sacco_admin/add_vehicle.html', form=form)
 
 
 # Route to view travel schedules for a Sacco admin

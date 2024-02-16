@@ -27,6 +27,9 @@
         <label for="departure_time">Departure Time:</label>
         <input type="datetime-local" name="departure_time" required>
 
+        <label for="price">Price:</label>
+        <input type="number" name="price" step="0.01" required>  {# Adjust the step attribute according to your requirements #}
+
         <label for="vehicle_id">Select Vehicle:</label>
         <select name="vehicle_id" required>
             {% for vehicle in sacco_vehicles %}
