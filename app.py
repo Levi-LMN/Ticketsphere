@@ -2,23 +2,19 @@ from flask import Flask, render_template, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email
 from flask_bcrypt import Bcrypt
-from wtforms import SelectField
 from flask_mail import Mail, Message
 from datetime import datetime, timedelta
 import uuid
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import DateTime, func
 from flask import request
 from flask_wtf import FlaskForm
 from wtforms import StringField, DateTimeField, SelectField, SubmitField
-from wtforms.validators import DataRequired
 from wtforms import StringField, IntegerField, SelectField, SubmitField
-from wtforms.validators import DataRequired
 from wtforms.validators import DataRequired, Optional
+from flask import render_template, url_for
 
 app = Flask(__name__)
 
@@ -42,6 +38,7 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 
+# User model
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(255), nullable=False)
@@ -57,6 +54,7 @@ class User(UserMixin, db.Model):
     sacco_id = db.Column(db.Integer, db.ForeignKey('sacco.id'))  # ForeignKey to associate user with a Sacco
 
 
+# Sacco model
 class Sacco(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
@@ -64,6 +62,7 @@ class Sacco(db.Model):
     vehicles = db.relationship('Vehicle', backref='sacco', lazy=True)
 
 
+# Vehicle model
 class Vehicle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     make = db.Column(db.String(50), nullable=False)
@@ -75,6 +74,7 @@ class Vehicle(db.Model):
     driver = db.relationship('User', backref='vehicles', lazy=True)  # Add the relationship definition
 
 
+# Travel schedule model
 class TravelSchedule(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     departure_location = db.Column(db.String(255), nullable=False)
@@ -84,6 +84,7 @@ class TravelSchedule(db.Model):
     vehicle = db.relationship('Vehicle', backref='travel_schedules', lazy=True)
 
 
+# Admin registration form
 class AdminRegistrationForm(FlaskForm):
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
@@ -95,6 +96,7 @@ class AdminRegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
 
+# User registration form
 class UserRegistrationForm(FlaskForm):
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
@@ -103,6 +105,7 @@ class UserRegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
 
+# Driver registration form
 class DriverRegistrationForm(FlaskForm):
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
@@ -112,6 +115,7 @@ class DriverRegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
 
+# Sacco admin registration form
 class SaccoAdminRegistrationForm(FlaskForm):
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
@@ -122,18 +126,21 @@ class SaccoAdminRegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
 
+# Login flask form for all user
 class UniversalLoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
 
+# flask form to add sacco's
 class SaccoForm(FlaskForm):
     name = StringField('Sacco Name', validators=[DataRequired()])
     admin = SelectField('Sacco Admin', coerce=int)  # Add this line for the admin field
     submit = SubmitField('Update Sacco')
 
 
+# flask form to edit sacco info
 class ManageSaccoForm(FlaskForm):
     sacco_id = StringField('Sacco ID', validators=[DataRequired()])
     sacco_name = StringField('Sacco Name', validators=[DataRequired()])
@@ -141,6 +148,7 @@ class ManageSaccoForm(FlaskForm):
     submit = SubmitField('Update Sacco')
 
 
+# flask form to add schedules
 class TravelScheduleForm(FlaskForm):
     departure_location = StringField('Departure Location', validators=[DataRequired()])
     destination = StringField('Destination', validators=[DataRequired()])
@@ -149,6 +157,7 @@ class TravelScheduleForm(FlaskForm):
     submit = SubmitField('Add Schedule')
 
 
+# flask form to add vehicles
 class VehicleForm(FlaskForm):
     make = StringField('Make', validators=[DataRequired()])
     model = StringField('Model', validators=[DataRequired()])
@@ -163,6 +172,7 @@ with app.app_context():
     db.create_all()
 
 
+# flask load user
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -188,6 +198,7 @@ def force_error():
     return f"This won't be reached, due to the intentional error above: {result}"
 
 
+# Under construction pages
 @app.route('/about')
 @app.route('/contact')
 @app.route('/parcels')
@@ -197,6 +208,7 @@ def under_construction():
     return render_template('under_construction.html', clicked_page=clicked_page)
 
 
+# initial home route
 @app.route('/')
 @login_required
 def home():
@@ -213,15 +225,17 @@ def home():
         return redirect(url_for('logout'))
 
 
+# route to send verification email
 def send_verification_email(user):
     token = user.token
     subject = 'Verify Your Email'
-    body = f'Thank you for registering! Please click the following link to verify your email: {url_for("verify", token=token, _external=True)}'
+    body = f'Thank you for registering! Please click the following link to verify your email: {url_for("verify", token=token, _external=True)} \n If you did not request it,you can safely ignore this email'
 
     msg = Message(subject, recipients=[user.email], body=body)
     mail.send(msg)
 
 
+# route to verify token
 @app.route('/verify/<token>')
 @login_required  # Requires the user to be logged in to access this route
 def verify(token):
@@ -251,6 +265,7 @@ def verify(token):
         return redirect(url_for('register'))
 
 
+# route to login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = UniversalLoginForm()
@@ -277,6 +292,7 @@ def login():
     return render_template('login.html', form=form)
 
 
+# route to logout
 @app.route('/logout')
 @login_required
 def logout():
@@ -285,18 +301,21 @@ def logout():
     return redirect(url_for('home'))
 
 
+# route to user profile
 @app.route('/profile')
 @login_required
 def profile():
     return render_template('profile.html', user=current_user)
 
 
+# route to user dashboard
 @app.route('/user-dashboard')
 @login_required
 def user_dashboard():
-    return render_template('user_dashboard.html', user=current_user)
+    return render_template('user/user_dashboard.html', user=current_user)
 
 
+# route to sacco admin dashboard
 @app.route('/sacco-admin-dashboard')
 @login_required
 def sacco_admin_dashboard():
@@ -308,9 +327,10 @@ def sacco_admin_dashboard():
         return render_template('sacco_admin_dashboard.html', user=sacco_admin, assigned_sacco=assigned_sacco)
     else:
         flash('You are not assigned to any Sacco.', 'warning')
-        return render_template('sacco_admin_dashboard.html', user=sacco_admin)
+        return render_template('sacco_admin/sacco_admin_dashboard.html', user=sacco_admin)
 
 
+# route to drivers dashboard
 @app.route('/driver_dashboard')
 @login_required
 def driver_dashboard():
@@ -322,15 +342,17 @@ def driver_dashboard():
     # Retrieve vehicles associated with the current driver
     vehicles = current_user.vehicles
 
-    return render_template('driver_dashboard.html', vehicles=vehicles)
+    return render_template('driver/driver_dashboard.html', vehicles=vehicles)
 
+
+# route to admin dashboard
 @app.route('/admin-dashboard')
 @login_required
 def admin_dashboard():
-    return render_template('admin_dashboard.html', user=current_user)
+    return render_template('admin/admin_dashboard.html', user=current_user)
 
 
-# Add this route to your Flask app
+# route to user management page
 @app.route('/user-management')
 @login_required
 def user_management():
@@ -343,7 +365,7 @@ def user_management():
         return redirect(url_for('home'))
 
 
-# Add this route to your Flask app
+# route to change roles
 @app.route('/change-role/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def change_role(user_id):
@@ -368,6 +390,7 @@ def change_role(user_id):
         return redirect(url_for('home'))
 
 
+# route to register user
 @app.route('/register/user', methods=['GET', 'POST'])
 def register_user():
     form = UserRegistrationForm()
@@ -404,9 +427,10 @@ def register_user():
             flash('An error occurred during registration. Please try again.', 'danger')
             return redirect(url_for('register_user'))
 
-    return render_template('register_user.html', form=form)
+    return render_template('user/register_user.html', form=form)
 
 
+# route to register driver
 @app.route('/register/driver', methods=['GET', 'POST'])
 def register_driver():
     form = DriverRegistrationForm()
@@ -444,9 +468,10 @@ def register_driver():
             flash('An error occurred during registration. Please try again.', 'danger')
             return redirect(url_for('register_driver'))
 
-    return render_template('register_driver.html', form=form)
+    return render_template('driver/register_driver.html', form=form)
 
 
+# route to register sacco admin
 @app.route('/register/sacco_admin', methods=['GET', 'POST'])
 def register_sacco_admin():
     form = SaccoAdminRegistrationForm()
@@ -484,9 +509,10 @@ def register_sacco_admin():
             flash('An error occurred during registration. Please try again.', 'danger')
             return redirect(url_for('register_sacco_admin'))
 
-    return render_template('register_sacco_admin.html', form=form)
+    return render_template('sacco_admin/register_sacco_admin.html', form=form)
 
 
+# route to register admin
 @app.route('/register/admin', methods=['GET', 'POST'])
 def register_admin():
     form = AdminRegistrationForm()
@@ -526,11 +552,13 @@ def register_admin():
     return render_template('admin/register_admin.html', form=form)
 
 
+# route to authentication page
 @app.route('/auth')
 def auth():
     return render_template('auth.html')
 
 
+# route to add sacco
 @app.route('/add_sacco', methods=['GET', 'POST'])
 @login_required
 def add_sacco():
@@ -562,6 +590,7 @@ def add_sacco():
     return render_template('admin/add_sacco.html', form=form)
 
 
+# route to delete sacco
 @app.route('/delete_sacco', methods=['GET', 'POST'])
 @login_required
 def delete_sacco():
@@ -586,32 +615,7 @@ def delete_sacco():
     return render_template('admin/delete_sacco.html', saccos=saccos, form=form)
 
 
-# app.py
-@app.route('/select_sacco_admin/<int:sacco_id>', methods=['GET', 'POST'])
-@login_required
-def select_sacco_admin(sacco_id):
-    # Ensure the current user is an admin before allowing them to select a Sacco admin
-    if current_user.role != 'admin':
-        flash('Permission denied. Only admin users can select Sacco admins.', 'danger')
-        return redirect(url_for('home'))
-
-    sacco = Sacco.query.get_or_404(sacco_id)
-    users = User.query.filter_by(role='sacco_admin').all()
-
-    if request.method == 'POST':
-        selected_admin_id = int(request.form.get('admin'))
-        selected_admin = User.query.get_or_404(selected_admin_id)
-        sacco.admins.append(selected_admin)
-        db.session.commit()
-        flash(f'Sacco admin "{selected_admin.first_name} {selected_admin.last_name}" selected for "{sacco.name}".',
-              'success')
-        return redirect(url_for('home'))
-
-    return render_template('admin/select_sacco_admin.html', sacco=sacco, users=users)
-
-
-# ...
-
+# route to manage saccos
 @app.route('/manage_saccos', methods=['GET', 'POST'])
 @login_required
 def manage_saccos():
@@ -682,9 +686,10 @@ def add_schedule():
 
     # Render the form to add schedules
     sacco_vehicles = current_user.sacco.vehicles
-    return render_template('add_schedule.html', sacco_vehicles=sacco_vehicles)
+    return render_template('sacco_admin/add_schedule.html', sacco_vehicles=sacco_vehicles)
 
 
+# route to add vehicles by sacco admin
 @app.route('/add_vehicle', methods=['GET', 'POST'])
 @login_required
 def add_vehicle():
@@ -710,7 +715,7 @@ def add_vehicle():
         existing_vehicle = Vehicle.query.filter_by(registration_plate=registration_plate).first()
         if existing_vehicle:
             flash('Vehicle with the same registration plate already exists. Please choose a different one.', 'danger')
-            return render_template('admin/add_vehicle.html', form=form)
+            return render_template('sacco_admin/add_vehicle.html', form=form)
 
         vehicle = Vehicle(
             make=make,
@@ -747,13 +752,13 @@ def view_schedules():
 
     if sacco:
         schedules = TravelSchedule.query.join(Vehicle).filter_by(sacco=sacco).all()
-        return render_template('view_schedules.html', schedules=schedules)
+        return render_template('sacco_admin/view_schedules.html', schedules=schedules)
     else:
         flash('User is not associated with a sacco', 'error')
         return redirect(url_for('sacco_admin_dashboard'))  # Replace 'dashboard' with the route for your dashboard
 
 
-# Update the route to handle filtering with unique locations and destinations
+# route to view all schedules
 @app.route('/schedules')
 @login_required
 def view_all_schedules():
@@ -783,10 +788,11 @@ def view_all_schedules():
     # Pass all_saccos, all_locations, and all_destinations to the template for the filters
     all_saccos = Sacco.query.all()
 
-    return render_template('schedules.html', schedules=schedules, all_saccos=all_saccos,
+    return render_template('user/schedules.html', schedules=schedules, all_saccos=all_saccos,
                            all_locations=all_locations, all_destinations=all_destinations)
 
 
+# route to view vehicles by sacco admin
 @app.route('/view_vehicles', methods=['GET'])
 @login_required
 def view_vehicles():
@@ -798,37 +804,18 @@ def view_vehicles():
     # Retrieve all vehicles associated with the user's Sacco
     vehicles = Vehicle.query.filter_by(sacco=current_user.sacco).all()
 
-    return render_template('admin/view_vehicles.html', vehicles=vehicles)
+    return render_template('sacco_admin/view_vehicles.html', vehicles=vehicles)
 
-from flask import render_template, url_for
 
+# route to view details about a specific schedule
 @app.route('/schedule_details/<int:schedule_id>')
 @login_required
 def schedule_details(schedule_id):
     # Fetch the schedule details based on schedule_id
     schedule = TravelSchedule.query.get_or_404(schedule_id)
 
-    return render_template('schedule_details.html', schedule=schedule)
+    return render_template('user/schedule_details.html', schedule=schedule)
 
-@app.route('/checkout/<int:schedule_id>', methods=['GET', 'POST'])
-@login_required
-def checkout(schedule_id):
-    schedule = Schedule.query.get_or_404(schedule_id)
-    form = CheckoutForm()
-
-    if form.validate_on_submit():
-        # Perform actual payment processing here using a payment gateway
-        # For example, you might use Stripe, PayPal, etc.
-        # Ensure to handle sensitive information securely
-
-        # For this example, just simulate a successful payment
-        flash('Payment successful!', 'success')
-
-        # Perform additional steps like generating and downloading the ticket
-        # For simplicity, we'll redirect back to the schedule details page
-        return redirect(url_for('schedule_details', schedule_id=schedule.id))
-
-    return render_template('checkout.html', schedule=schedule, form=form)
 
 if __name__ == '__main__':
     app.run(debug=True)
