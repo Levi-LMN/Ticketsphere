@@ -2,31 +2,57 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Book a Ticket</h2>
-  <p>Available Seats:</p>
-  <form method="post" action="{{ url_for('book_ticket', schedule_id=travel_schedule.id) }}">
-    {{ form.csrf_token }}
-    <label for="seat_number">Select Seat:</label>
-    {{ form.seat_number(class="form-control", placeholder="Select Seat", required="required") }}
-    {{ form.submit(class="btn btn-primary") }}
-  </form>
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title mb-4">Book a Ticket</h2>
+            <form method="post" action="{{ url_for('book_ticket', schedule_id=travel_schedule.id) }}">
+              {{ form.csrf_token }}
+              <div class="form-group">
+                <label for="seat_number">Select Seat:</label>
+                {{ form.seat_number(class="form-control", placeholder="Select Seat", required="required") }}
+              </div>
+              {{ form.submit(class="btn btn-primary") }}
+            </form>
+          </div>
+        </div>
+      </div>
 
-  {% if booked_seats %}
-    <p>Booked Seats: {{ booked_seats }}</p>
-  {% endif %}
+      <div class="col-lg-6">
+<!--        <div class="card">-->
+<!--          <div class="card-body">-->
+<!--            <h5 class="card-title mb-4">Available Seats:</h5>-->
+<!--            <ul class="list-group list-group-flush">-->
+<!--              {% for seat in available_seats %}-->
+<!--                <li class="list-group-item">{{ seat }}</li>-->
+<!--              {% endfor %}-->
+<!--            </ul>-->
+<!--          </div>-->
+<!--        </div>-->
 
-  <script>
-    // Assuming booked_seats is a list of booked seats, modify as per your data structure
-    var bookedSeats = {{ booked_seats|tojson|safe }};
-    var seatDropdown = document.getElementById("seat_number");
+        {% if booked_seats %}
+          <div class="card mt-4">
+            <div class="card-body">
+              <h5 class="card-title mb-4">Booked Seats:</h5>
+              <p class="card-text">{{ booked_seats }}</p>
+            </div>
+          </div>
+        {% endif %}
 
-    // Remove booked seats from the dropdown options
-    bookedSeats.forEach(function(bookedSeat) {
-      var optionToRemove = seatDropdown.querySelector('option[value="' + bookedSeat + '"]');
-      if (optionToRemove) {
-        optionToRemove.remove();
-      }
-    });
-  </script>
+        <script>
+          var bookedSeats = {{ booked_seats|tojson|safe }};
+          var seatDropdown = document.getElementById("seat_number");
 
+          bookedSeats.forEach(function(bookedSeat) {
+            var optionToRemove = seatDropdown.querySelector('option[value="' + bookedSeat + '"]');
+            if (optionToRemove) {
+              optionToRemove.remove();
+            }
+          });
+        </script>
+      </div>
+    </div>
+  </div>
 {% endblock %}

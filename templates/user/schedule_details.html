@@ -17,7 +17,7 @@
                     <li class="list-group-item"><strong>Destination:</strong> {{ schedule.destination }}</li>
                     <li class="list-group-item"><strong>Departure Time:</strong> {{ schedule.departure_time.strftime('%Y-%m-%d %H:%M') }}</li>
                     <li class="list-group-item"><strong>Sacco:</strong> {{ schedule.vehicle.sacco.name }}</li>
-                    <li class="list-group-item"><strong>Sacco:</strong> {{ schedule.vehicle.sacco.name }}</li>
+                    <li class="list-group-item"><strong>Price:</strong> {{ schedule.price }}</li>
                     <li class="list-group-item"><strong>Driver:</strong> {{ schedule.vehicle.driver.first_name }} {{ schedule.vehicle.driver.last_name }}</li>
                     <li class="list-group-item"><strong>Email:</strong> {{ schedule.vehicle.driver.email }}</li>
                 </ul>
@@ -43,7 +43,8 @@
 
                 <div class="text-right mt-3 mt-md-0">
                     <a href="{{ url_for('view_all_schedules') }}" class="btn btn-secondary mb-2">Back to Schedules</a>
-                    <a href="{{ url_for('checkout', schedule_id=schedule.id) }}" class="btn btn-primary ml-2 mb-2">Continue to Checkout</a>
+<!--                    <a href="{{ url_for('checkout', schedule_id=schedule.id) }}" class="btn btn-primary ml-2 mb-2">Download ticket</a>-->
+                    <a href="{{ url_for('book_ticket', schedule_id=schedule.id) }}" class="btn btn-primary ml-2 mb-2">Continue to Checkout</a>
                 </div>
             </div>
         </div>
