@@ -15,6 +15,9 @@ from wtforms import StringField, DateTimeField, SelectField, SubmitField
 from wtforms import StringField, IntegerField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Optional
 from flask import render_template, url_for
+from flask import render_template, make_response
+import pdfkit
+
 
 app = Flask(__name__)
 
@@ -171,7 +174,6 @@ class VehicleForm(FlaskForm):
 with app.app_context():
     db.create_all()
 
-
 # flask load user
 @login_manager.user_loader
 def load_user(user_id):
@@ -197,7 +199,6 @@ def force_error():
     result = 1 / 0
     return f"This won't be reached, due to the intentional error above: {result}"
 
-
 # Under construction pages
 @app.route('/about')
 @app.route('/contact')
@@ -206,7 +207,6 @@ def force_error():
 def under_construction():
     clicked_page = request.path[1:].capitalize()  # Extract page name from URL
     return render_template('under_construction.html', clicked_page=clicked_page)
-
 
 # initial home route
 @app.route('/')
@@ -224,7 +224,6 @@ def home():
         flash('Invalid user role', 'danger')
         return redirect(url_for('logout'))
 
-
 # route to send verification email
 def send_verification_email(user):
     token = user.token
@@ -233,7 +232,6 @@ def send_verification_email(user):
 
     msg = Message(subject, recipients=[user.email], body=body)
     mail.send(msg)
-
 
 # route to verify token
 @app.route('/verify/<token>')
@@ -264,7 +262,6 @@ def verify(token):
         flash('Invalid verification link. Please register again.', 'danger')
         return redirect(url_for('register'))
 
-
 # route to login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -291,7 +288,6 @@ def login():
 
     return render_template('login.html', form=form)
 
-
 # route to logout
 @app.route('/logout')
 @login_required
@@ -300,20 +296,17 @@ def logout():
     flash('You have been logged out.', 'success')
     return redirect(url_for('home'))
 
-
 # route to user profile
 @app.route('/profile')
 @login_required
 def profile():
     return render_template('profile.html', user=current_user)
 
-
 # route to user dashboard
 @app.route('/user-dashboard')
 @login_required
 def user_dashboard():
     return render_template('user/user_dashboard.html', user=current_user)
-
 
 # route to sacco admin dashboard
 @app.route('/sacco-admin-dashboard')
@@ -329,7 +322,6 @@ def sacco_admin_dashboard():
         flash('You are not assigned to any Sacco.', 'warning')
         return render_template('sacco_admin/sacco_admin_dashboard.html', user=sacco_admin)
 
-
 # route to drivers dashboard
 @app.route('/driver_dashboard')
 @login_required
@@ -343,7 +335,6 @@ def driver_dashboard():
     vehicles = current_user.vehicles
 
     return render_template('driver/driver_dashboard.html', vehicles=vehicles)
-
 
 # route to admin dashboard
 @app.route('/admin-dashboard')
@@ -389,7 +380,6 @@ def change_role(user_id):
         flash('Access denied. You are not authorized to perform this action.', 'danger')
         return redirect(url_for('home'))
 
-
 # route to register user
 @app.route('/register/user', methods=['GET', 'POST'])
 def register_user():
@@ -428,7 +418,6 @@ def register_user():
             return redirect(url_for('register_user'))
 
     return render_template('user/register_user.html', form=form)
-
 
 # route to register driver
 @app.route('/register/driver', methods=['GET', 'POST'])
@@ -470,7 +459,6 @@ def register_driver():
 
     return render_template('driver/register_driver.html', form=form)
 
-
 # route to register sacco admin
 @app.route('/register/sacco_admin', methods=['GET', 'POST'])
 def register_sacco_admin():
@@ -511,7 +499,6 @@ def register_sacco_admin():
 
     return render_template('sacco_admin/register_sacco_admin.html', form=form)
 
-
 # route to register admin
 @app.route('/register/admin', methods=['GET', 'POST'])
 def register_admin():
@@ -551,12 +538,10 @@ def register_admin():
 
     return render_template('admin/register_admin.html', form=form)
 
-
 # route to authentication page
 @app.route('/auth')
 def auth():
     return render_template('auth.html')
-
 
 # route to add sacco
 @app.route('/add_sacco', methods=['GET', 'POST'])
@@ -589,7 +574,6 @@ def add_sacco():
 
     return render_template('admin/add_sacco.html', form=form)
 
-
 # route to delete sacco
 @app.route('/delete_sacco', methods=['GET', 'POST'])
 @login_required
@@ -613,6 +597,7 @@ def delete_sacco():
             return redirect(url_for('delete_sacco'))
 
     return render_template('admin/delete_sacco.html', saccos=saccos, form=form)
+
 
 
 # route to manage saccos
@@ -687,7 +672,6 @@ def add_schedule():
     # Render the form to add schedules
     sacco_vehicles = current_user.sacco.vehicles
     return render_template('sacco_admin/add_schedule.html', sacco_vehicles=sacco_vehicles)
-
 
 # route to add vehicles by sacco admin
 @app.route('/add_vehicle', methods=['GET', 'POST'])
@@ -791,7 +775,6 @@ def view_all_schedules():
     return render_template('user/schedules.html', schedules=schedules, all_saccos=all_saccos,
                            all_locations=all_locations, all_destinations=all_destinations)
 
-
 # route to view vehicles by sacco admin
 @app.route('/view_vehicles', methods=['GET'])
 @login_required
@@ -807,6 +790,8 @@ def view_vehicles():
     return render_template('sacco_admin/view_vehicles.html', vehicles=vehicles)
 
 
+
+
 # route to view details about a specific schedule
 @app.route('/schedule_details/<int:schedule_id>')
 @login_required
@@ -815,6 +800,15 @@ def schedule_details(schedule_id):
     schedule = TravelSchedule.query.get_or_404(schedule_id)
 
     return render_template('user/schedule_details.html', schedule=schedule)
+
+# rote for checkout page with schedule id
+@app.route('/checkout/<int:schedule_id>')
+@login_required
+def checkout(schedule_id):
+    # Fetch the schedule details based on schedule_id
+    schedule = TravelSchedule.query.get_or_404(schedule_id)
+
+    return render_template('user/checkout.html', schedule=schedule)
 
 
 if __name__ == '__main__':
