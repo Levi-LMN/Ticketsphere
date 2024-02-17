@@ -63,6 +63,9 @@ class User(UserMixin, db.Model):
     sacco_role = db.Column(db.String(20))  # Add Sacco admin-specific information
     sacco_id = db.Column(db.Integer, db.ForeignKey('sacco.id'))  # ForeignKey to associate user with a Sacco
 
+    def booked_tickets(self):
+        return Ticket.query.filter_by(user=self).all()
+
 
 # Sacco model
 class Sacco(db.Model):
@@ -355,19 +358,35 @@ def sacco_admin_dashboard():
         flash('You are not assigned to any Sacco.', 'warning')
         return render_template('sacco_admin/sacco_admin_dashboard.html', user=sacco_admin)
 
-# route to drivers dashboard
-@app.route('/driver_dashboard')
+# Route for the driver dashboard
+@app.route('/driver_dashboard', methods=['GET', 'POST'])
 @login_required
 def driver_dashboard():
-    # Ensure the current user is a driver
-    if current_user.role != 'driver':
-        flash('Permission denied. Only drivers can access this dashboard.', 'danger')
-        return redirect(url_for('home'))
+    # Retrieve the driver's assigned vehicle
+    driver_vehicle = Vehicle.query.filter_by(driver=current_user).first()
 
-    # Retrieve vehicles associated with the current driver
-    vehicles = current_user.vehicles
+    # Retrieve the travel schedules associated with the driver's vehicle
+    if driver_vehicle:
+        vehicle_travel_schedules = TravelSchedule.query.filter_by(vehicle=driver_vehicle).all()
+    else:
+        vehicle_travel_schedules = []
 
-    return render_template('driver/driver_dashboard.html', vehicles=vehicles)
+    # Retrieve the booked tickets for each travel schedule with user information
+    booked_tickets = {}
+    for schedule in vehicle_travel_schedules:
+        tickets = Ticket.query.filter_by(travel_schedule=schedule).all()
+        booked_tickets[schedule.id] = [(ticket, ticket.user) for ticket in tickets]
+
+    # Calculate the remaining seats for each schedule
+    remaining_seats = {}
+    for schedule in vehicle_travel_schedules:
+        booked_seats = len(booked_tickets.get(schedule.id, []))
+        remaining_seats[schedule.id] = schedule.vehicle.capacity - booked_seats
+
+    return render_template('driver/driver_dashboard.html', driver_vehicle=driver_vehicle,
+                           vehicle_travel_schedules=vehicle_travel_schedules, booked_tickets=booked_tickets,
+                           remaining_seats=remaining_seats)
+
 
 # route to admin dashboard
 @app.route('/admin-dashboard')
@@ -921,6 +940,17 @@ def download_ticket(ticket_id):
 
     # Render the download_ticket template with the ticket and schedule details
     return render_template('user/download_ticket.html', ticket=ticket, travel_schedule=travel_schedule)
+
+# Route for the user's bookings
+@app.route('/user_bookings', methods=['GET'])
+@login_required
+def user_bookings():
+    # Retrieve the user's booked tickets
+    user_tickets = current_user.booked_tickets()
+
+    return render_template('user/user_bookings.html', user_tickets=user_tickets)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

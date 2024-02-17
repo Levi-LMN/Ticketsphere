@@ -1,20 +1,61 @@
-<!-- driver_dashboard.html -->
+<!-- templates/driver/driver_dashboard.html -->
+
 {% extends 'base.html' %}
 
-{% block title %}Driver Dashboard{% endblock %}
-
 {% block content %}
-    <h1>Welcome, {{ current_user.first_name }}!</h1>
-    <p>This is the driver dashboard.</p>
- <h3>Your Vehicles:</h3>
-  {% if vehicles %}
-    <ul>
-      {% for vehicle in vehicles %}
-        <li>{{ vehicle.make }} {{ vehicle.model }} - {{ vehicle.registration_plate }}</li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No vehicles associated with your account.</p>
-  {% endif %}
-    <a href="{{ url_for('logout') }}">Logout</a>
+  <div class="container">
+    <h1 class="mt-5 mb-4">Driver Dashboard</h1>
+
+    {% if driver_vehicle %}
+      <div class="card mb-4">
+        <div class="card-body">
+          <h2>Your Assigned Vehicle</h2>
+          <p><strong>Make:</strong> {{ driver_vehicle.make }}</p>
+          <p><strong>Model:</strong> {{ driver_vehicle.model }}</p>
+          <p><strong>Registration Plate:</strong> {{ driver_vehicle.registration_plate }}</p>
+          <p><strong>Capacity:</strong> {{ driver_vehicle.capacity }}</p>
+        </div>
+      </div>
+    {% else %}
+      <p class="alert alert-warning">No assigned vehicle</p>
+    {% endif %}
+
+    {% if vehicle_travel_schedules %}
+      <div class="card mb-4">
+        <div class="card-body">
+          <h2>Travel Schedules for Your Vehicle</h2>
+          <ul class="list-group">
+            {% for schedule in vehicle_travel_schedules %}
+              <li class="list-group-item">
+                <p><strong>Departure Location:</strong> {{ schedule.departure_location }}</p>
+                <p><strong>Destination:</strong> {{ schedule.destination }}</p>
+                <p><strong>Departure Time:</strong> {{ schedule.departure_time }}</p>
+                <p><strong>Price:</strong> {{ schedule.price }}</p>
+
+                {% if booked_tickets[schedule.id] %}
+                  <h3 class="mt-3">Booked Tickets</h3>
+                  <ul class="list-group">
+                    {% for ticket, user in booked_tickets[schedule.id] %}
+                      <li class="list-group-item">
+                        <p><strong>Ticket Number:</strong> {{ ticket.ticket_number }}</p>
+                        <p><strong>Seat Number:</strong> {{ ticket.seat_number }}</p>
+                        <p><strong>Booking Time:</strong> {{ ticket.booking_time }}</p>
+                        <p><strong>User Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p class="alert alert-info">No booked tickets for this schedule</p>
+                {% endif %}
+
+                <p class="mt-3"><strong>Remaining Seats:</strong> {{ remaining_seats[schedule.id] }}</p>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% else %}
+      <p class="alert alert-info">No travel schedules for your vehicle</p>
+    {% endif %}
+  </div>
 {% endblock %}

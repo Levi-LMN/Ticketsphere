@@ -48,12 +48,24 @@
                     </div>
                 </div>
 
+<!--                <div class="card mb-4">-->
+<!--                    <div class="card-body">-->
+<!--                        <h5 class="card-title">Token</h5>-->
+<!--                        <p class="card-text">{{ user.token }}</p>-->
+<!--                    </div>-->
+<!--                </div>-->
+
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h5 class="card-title">Token</h5>
-                        <p class="card-text">{{ user.token }}</p>
+                        <h5 class="card-title">Booking History</h5>
+                        {% if user.role == 'user' %}
+                    <!-- Add a link to the user bookings page if the user's role is 'user' -->
+                    <a href="{{ url_for('user_bookings') }}" class="btn btn-primary">View Bookings</a>
+                {% endif %}
                     </div>
                 </div>
+
+
 
                 <div class="card mb-4">
                     <div class="card-body">

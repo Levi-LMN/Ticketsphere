@@ -1,0 +1,38 @@
+<!-- templates/user/user_bookings.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h1 class="mb-4 text-center text-primary">Your Bookings</h1>
+
+    <div class="row">
+      <div class="col-md-8 mx-auto">
+        {% if user_tickets %}
+          <div class="list-group">
+            {% for ticket in user_tickets %}
+              <div class="list-group-item list-group-item-action mb-3 rounded-3 shadow-sm gradient-bg">
+                <div class="row">
+                  <div class="col-md-8">
+                    <h5 class="mb-1 text-primary">{{ ticket.travel_schedule.departure_location }} to {{ ticket.travel_schedule.destination }}</h5>
+                    <p class="mb-1"><strong class="text-secondary">Departure Time:</strong> {{ ticket.travel_schedule.departure_time }}</p>
+                    <p class="mb-1"><strong class="text-secondary">Seat Number:</strong> {{ ticket.seat_number }}</p>
+                    <p class="mb-1"><strong class="text-secondary">Booking Time:</strong> {{ ticket.booking_time }}</p>
+                    <p class="mb-1"><strong class="text-secondary">Price:</strong> KES {{ ticket.price }}</p>
+                  </div>
+                  <div class="col-md-4 text-center">
+                    <!-- You can add additional options or actions here if needed -->
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="alert alert-info rounded-3 shadow-sm text-center">
+            <p>You have not booked any tickets yet.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
