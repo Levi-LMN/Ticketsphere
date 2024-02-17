@@ -1,35 +1,33 @@
-{% extends 'base.html' %}
-
-{% block title %}Flipping Card{% endblock %}
-
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
+      .front, .back {
+  transform-origin: center center;
+}
 
-    .card-container {
-      width: 300px;
-      margin: 20px auto;
-    }
+
 
     .card {
-      width: 100%;
+      width: 300px;
       height: 400px;
       perspective: 1000px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .card-inner {
       width: 100%;
       height: 100%;
       transform-style: preserve-3d;
-      transition: transform 0.5s;
+      transition: transform 0.6s;
     }
 
-    .card.flipped .card-inner {
+    .flipped .card-inner {
       transform: rotateY(180deg);
     }
 
@@ -40,165 +38,86 @@
       backface-visibility: hidden;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
-      font-size: 18px;
+      align-items: center;
+      font-size: 16px;
       font-weight: bold;
       border: 1px solid #ccc;
-      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .front {
+      background-color: #fff;
+      padding: 20px;
     }
 
     .back {
-      transform: rotateY(180deg);
-      font-size: 14px;
-      font-family: 'Arial', sans-serif;
-      overflow-y: auto;
-      padding: 10px;
-    }
+  background-color: #fff;
+  transform: rotateY(180deg) translateZ(1px); /* Added translateZ(1px) */
+  padding: 20px;
+  text-align: left;
+}
 
-    .profile-pic {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-bottom: 10px;
-      border: 3px solid #fff;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+
+    .button-container {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
     button {
-      margin-top: 10px;
-      padding: 10px 20px;
+      padding: 10px;
       font-size: 16px;
-      cursor: pointer;
       background-color: #4caf50;
       color: #fff;
       border: none;
       border-radius: 5px;
-      transition: background-color 0.3s;
+      cursor: pointer;
     }
 
-    button:hover {
-      background-color: #45a049;
+    img {
+      border-radius: 50%;
+      margin-bottom: 15px;
+    }
+
+    p {
+      margin: 8px 0;
     }
   </style>
+</head>
+<body>
 
-  <div class="container">
-    <div class="card-container">
-      <div class="card" id="flip-card">
-        <div class="card-inner">
-          <div class="card-face">
-            <img src="https://placekitten.com/100/100" alt="Profile Picture" class="profile-pic">
-            <p style="margin-top: 10px; margin-bottom: 5px; font-size: 22px;">{{ user.first_name }} {{ user.last_name }}</p>
-          </div>
-          <div class="card-face back">
-            <p style="margin-bottom: 10px;">Details:</p>
-            <ul style="list-style: none; padding: 0;">
-              <li>{{ user.first_name }} {{ user.last_name }}</li>
-              <li>ID: {{ user.id }}</li>
-              <li>Email: {{ user.email }}</li>
-              <li>Role: {{ user.role }}</li>
-              <li>Date Created: {{ user.date_created }}</li>
-            </ul>
-
-            {% if user.is_verified %}
-              <span class="badge bg-success">Yes</span><br>
-              <span class="badge bg-success">Welcome to Ticketsphere</span>
-            {% else %}
-              <span class="badge bg-danger">No</span><br>
-              <span class="badge bg-danger">This means you will not be able to recover your account</span>
-            {% endif %}
-          </div>
-        </div>
+<div class="card">
+  <div class="card-inner">
+    <div class="card-face front">
+      <img src="https://previews.123rf.com/images/redrockerz/redrockerz1501/redrockerz150100107/35815846-bus-symbol.jpg" alt="Profile Picture" width="80" height="80">
+      <div>
+        <p>Name: Your Name</p>
+      </div>
+      <div class="button-container">
+        <button onclick="flipCard()">Flip Card</button>
       </div>
     </div>
-
-    <button onclick="flipCard()">Flip Card</button>
+    <div class="card-face back">
+      <p>Email: your.email@example.com</p>
+      <p>Phone: +123 456 789</p>
+      <p>Location: Your City, Country</p>
+      <div class="button-container">
+        <button onclick="flipCard()">Flip Card</button>
+      </div>
+    </div>
   </div>
+</div>
 
-<div class="row">
-            <div class="col-md-6">
-                <!--name card-->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Name</h5>
-                        <p class="card-text">{{ user.first_name }} {{ user.last_name }}</p>
-                    </div>
-                </div>
+<script>
+  function flipCard() {
+    var card = document.querySelector('.card');
+    card.classList.toggle('flipped');
+  }
+</script>
 
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">ID</h5>
-                        <p class="card-text">{{ user.id }}</p>
-                    </div>
-                </div>
-
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Email</h5>
-                        <p class="card-text">{{ user.email }}</p>
-                    </div>
-                </div>
-
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Role</h5>
-                        <p class="card-text">{{ user.role }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Date Created</h5>
-                        <p class="card-text">{{ user.date_created }}</p>
-                    </div>
-                </div>
-
-<!--                <div class="card mb-4">-->
-<!--                    <div class="card-body">-->
-<!--                        <h5 class="card-title">Token</h5>-->
-<!--                        <p class="card-text">{{ user.token }}</p>-->
-<!--                    </div>-->
-<!--                </div>-->
-
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Booking History</h5>
-                        {% if user.role == 'user' %}
-                    <!-- Add a link to the user bookings page if the user's role is 'user' -->
-                    <a href="{{ url_for('user_bookings') }}" class="btn btn-primary">View Bookings</a>
-                {% endif %}
-                    </div>
-                </div>
-
-
-
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Verified</h5>
-                        <p class="card-text">
-                            {% if user.is_verified %}
-                                <span class="badge bg-success">Yes</span><br>
-                                <span class="badge bg-success">Welcome to Ticketsphere</span>
-                            {% else %}
-                                <span class="badge bg-danger">No</span><br>
-                                <span class="badge bg-danger">This mean You will not be able to recover your account</span>
-                            {% endif %}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-  <script>
-    function flipCard() {
-      var card = document.getElementById('flip-card');
-      card.classList.toggle('flipped');
-    }
-  </script>
-{% endblock %}
+</body>
+</html>

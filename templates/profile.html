@@ -90,14 +90,14 @@
     /* Media query for screens larger than 768px (PC view) */
     @media (min-width: 768px) {
       .flipping-card-container .card {
-        width: 400px; /* Adjust the width for PC view */
+        width: 600px; /* Adjust the width for PC view */
       }
     }
 
     /* Media query for screens up to 767px (Mobile view) */
     @media (max-width: 767px) {
       .flipping-card-container .card {
-        width: 400px; /* Adjust the width for mobile view to full width */
+        width: 200px; /* Adjust the width for mobile view to full width */
       }
     }
   </style>
@@ -140,46 +140,29 @@
   </div>
 
 
-<div class="row">
-            <div class="col-md-6">
-
-                {% if not user.is_verified %}
-                  <div class="card mb-4">
-                      <div class="card-body">
-                          <h5 class="card-title">Verified status</h5>
-                          <p class="card-text">
-                              <span class="badge bg-danger">Not verified</span><br>
-                              <span class="badge bg-danger">Please Check your email to verify</span>
-              <!--              &lt;!&ndash; resend verification email &ndash;&gt;-->
-              <!--              <br>-->
-              <!--              <div style="text-align: center;">-->
-              <!--                <a href="" class="btn btn-primary btn-block">Resend Verification Email</a>-->
-              <!--            </div>-->
-                        </p>
-                      </div>
-                  </div>
-
-
-                  {% endif %}
             {% if user.role == 'user' %}
-               <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Booking History</h5>
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title text-muted mb-4">Booking History</h5>
+      <!-- Add a link to the user bookings page if the user's role is 'user' -->
+      <a href="{{ url_for('user_bookings') }}" class="btn btn-outline-info btn-sm">View Bookings</a>
+    </div>
+  </div>
+{% endif %}
 
-                    <!-- Add a link to the user bookings page if the user's role is 'user' -->
-                    <a href="{{ url_for('user_bookings') }}" class="btn btn-primary">View Bookings</a>
-
-                    </div>
-                </div>
-              {% endif %}
-
-            </div>
-        </div>
 
   <script>
-    function flipCard() {
-      var card = document.getElementById('flip-card');
-      card.classList.toggle('flipped');
-    }
-  </script>
+  // Function to force a resize when the page is loaded
+  window.onload = function() {
+    // Trigger the resize event
+    window.dispatchEvent(new Event('resize'));
+  };
+
+  // Function to flip the card
+  function flipCard() {
+    var card = document.getElementById('flip-card');
+    card.classList.toggle('flipped');
+  }
+</script>
+
 {% endblock %}
