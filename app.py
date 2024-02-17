@@ -26,8 +26,7 @@ import string
 from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request
 from sqlalchemy import func
-from sqlalchemy import or_
-from fuzzywuzzy import process
+
 
 # Create the Flask app
 app = Flask(__name__)
