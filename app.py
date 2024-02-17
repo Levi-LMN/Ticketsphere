@@ -25,7 +25,9 @@ import random
 import string
 from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request
+from sqlalchemy import func
 
+# Create the Flask app
 app = Flask(__name__)
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -803,22 +805,29 @@ def view_schedules():
 @login_required
 def view_all_schedules():
     # Get unique locations and destinations from the database
-    all_locations = set([schedule.departure_location for schedule in TravelSchedule.query.all()])
-    all_destinations = set([schedule.destination for schedule in TravelSchedule.query.all()])
+    all_locations = set([schedule.departure_location.lower() for schedule in TravelSchedule.query.all()])
+    all_destinations = set([schedule.destination.lower() for schedule in TravelSchedule.query.all()])
 
     # Retrieve filter parameters from the request
     filter_location = request.args.get('filter_location')
     filter_destination = request.args.get('filter_destination')
     filter_sacco_id = request.args.get('filter_sacco')
 
+    # Convert filter parameters to lowercase for case-insensitive comparison
+    if filter_location:
+        filter_location = filter_location.lower()
+
+    if filter_destination:
+        filter_destination = filter_destination.lower()
+
     # Query schedules based on filters
     query = TravelSchedule.query.join(Vehicle).join(Sacco)
 
     if filter_location:
-        query = query.filter(TravelSchedule.departure_location == filter_location)
+        query = query.filter(func.lower(TravelSchedule.departure_location) == filter_location)
 
     if filter_destination:
-        query = query.filter(TravelSchedule.destination == filter_destination)
+        query = query.filter(func.lower(TravelSchedule.destination) == filter_destination)
 
     if filter_sacco_id:
         query = query.filter(Sacco.id == filter_sacco_id)
@@ -832,6 +841,7 @@ def view_all_schedules():
     return render_template('user/schedules.html', schedules=schedules, all_saccos=all_saccos,
                            all_locations=all_locations, all_destinations=all_destinations,
                            schedule_has_available_seats=schedule_has_available_seats)
+
 
 # route to view vehicles by sacco admin
 @app.route('/view_vehicles', methods=['GET'])
