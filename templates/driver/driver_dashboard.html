@@ -24,7 +24,7 @@
       <div class="card mb-4">
         <div class="card-body">
           <h2>Travel Schedules for Your Vehicle</h2>
-          <ul class="list-group">
+          <ol class="list-group">
             {% for schedule in vehicle_travel_schedules %}
               <li class="list-group-item">
                 <p><strong>Departure Location:</strong> {{ schedule.departure_location }}</p>
@@ -37,42 +37,42 @@
                     View Booked Seats
                   </button>
 
-                 <!-- Modal for booked seats -->
-<div class="modal fade" id="bookedSeatsModal{{ schedule.id }}" tabindex="-1" role="dialog" aria-labelledby="bookedSeatsModalLabel{{ schedule.id }}" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="bookedSeatsModalLabel{{ schedule.id }}">Booked Seats</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        {% if booked_tickets[schedule.id] %}
-          <ol>
-            {% for ticket, user in booked_tickets[schedule.id] %}
-              <li>
-                <div class="card mb-2">
-                  <div class="card-body">
-                    <p><strong>Ticket Number:</strong> {{ ticket.ticket_number }}</p>
-                    <p><strong>Seat Number:</strong> {{ ticket.seat_number }}</p>
-                    <p><strong>Booking Time:</strong> {{ ticket.booking_time }}</p>
-                    <p><strong>User Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                  <!-- Modal for booked seats -->
+                  <div class="modal fade" id="bookedSeatsModal{{ schedule.id }}" tabindex="-1" role="dialog" aria-labelledby="bookedSeatsModalLabel{{ schedule.id }}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="bookedSeatsModalLabel{{ schedule.id }}">Booked Seats</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          {% if booked_tickets[schedule.id] %}
+                            <ol>
+                              {% for ticket, user in booked_tickets[schedule.id] %}
+                                <li>
+                                  <div class="card mb-2">
+                                    <div class="card-body">
+                                      <p><strong>Ticket Number:</strong> {{ ticket.ticket_number }}</p>
+                                      <p><strong>Seat Number:</strong> {{ ticket.seat_number }}</p>
+                                      <p><strong>Booking Time:</strong> {{ ticket.booking_time }}</p>
+                                      <p><strong>User Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                                    </div>
+                                  </div>
+                                </li>
+                              {% endfor %}
+                            </ol>
+                          {% else %}
+                            <p class="alert alert-info">No booked tickets for this schedule</p>
+                          {% endif %}
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </li>
-            {% endfor %}
-          </ol>
-        {% else %}
-          <p class="alert alert-info">No booked tickets for this schedule</p>
-        {% endif %}
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
 
                 {% else %}
                   <p class="alert alert-info">No booked tickets for this schedule</p>
@@ -81,7 +81,7 @@
                 <p class="mt-3"><strong>Remaining Seats:</strong> {{ remaining_seats[schedule.id] }}</p>
               </li>
             {% endfor %}
-          </ul>
+          </ol>
         </div>
       </div>
     {% else %}
@@ -89,8 +89,8 @@
     {% endif %}
   </div>
 
- <!-- Include Bootstrap JS and Popper.js -->
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UoUChgUC3i5z3fFKRG+6m9PCEf1izVYUKsNrV+WNxKOqSeLoLegwM5ks3IR4Q" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <!-- Include Bootstrap JS and Popper.js -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UoUChgUC3i5z3fFKRG+6m9PCEf1izVYUKsNrV+WNxKOqSeLoLegwM5ks3IR4Q" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 {% endblock %}
