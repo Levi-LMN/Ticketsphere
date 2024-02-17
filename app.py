@@ -26,6 +26,8 @@ import string
 from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request
 from sqlalchemy import func
+from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 
 
 # Create the Flask app
@@ -327,11 +329,16 @@ def login():
 
     return render_template('login.html', form=form)
 
-# route to logout
+# Route to logout
 @app.route('/logout')
 @login_required
 def logout():
+    # Clear Flask-Login session
     logout_user()
+
+    # Clear PIN-based session
+    session.pop('authenticated', None)
+
     flash('You have been logged out.', 'success')
     return redirect(url_for('home'))
 
@@ -1009,6 +1016,55 @@ def search():
     )
 
     return render_template('user/search_results.html', query=query, results=search_results)
+
+
+@app.route('/dev_console', methods=['GET', 'POST'])
+def dev_console():
+    error_message = None  # Initialize error_message outside of conditional blocks
+
+    # Check if the user is already authenticated and has the admin role
+    if session.get('authenticated') and current_user.is_authenticated and current_user.role == 'admin':
+        users = User.query.all()
+        return render_template('admin/console.html', users=users)
+
+    # If it's a POST request, check the PIN
+    if request.method == 'POST':
+        entered_pin = request.form.get('pin')
+
+        # Replace '1234' with your desired PIN
+        if entered_pin == '1234':
+            # Store authentication status in session
+            session['authenticated'] = True
+            users = User.query.all()
+
+            # Check if the user has the admin role
+            if current_user.is_authenticated and current_user.role == 'admin':
+                return render_template('admin/console.html', users=users)
+            else:
+                # Redirect or show an error message for non-admin users
+                error_message = 'You do not have the necessary permissions.'
+
+        else:
+            error_message = 'Invalid PIN. Please try again.'
+
+    # If it's a GET request or authentication failed, render the PIN input form
+    return render_template('admin/pin_form.html', error_message=error_message)
+
+
+# route to delete user
+@app.route('/delete_user/<int:user_id>', methods=['POST'])
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    return redirect(url_for('display_users'))
+
+# Example route for PIN clearance
+@app.route('/clear_pin', methods=['POST'])
+def clear_pin():
+    session.pop('authenticated', None)
+    return jsonify({'message': 'PIN cleared successfully'}), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True)
