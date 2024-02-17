@@ -21,7 +21,10 @@ from wtforms import StringField, DateTimeField, SelectField, FloatField, SubmitF
 from wtforms.validators import DataRequired, Optional
 # Import necessary modules
 from flask import send_file
-
+import random
+import string
+from datetime import datetime
+from flask import render_template, flash, redirect, url_for, request
 
 app = Flask(__name__)
 
@@ -95,6 +98,7 @@ class TravelSchedule(db.Model):
 # Ticket model
 class Ticket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    ticket_number = db.Column(db.String(20), unique=True, nullable=False)  # Add this line for the ticket number field
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref='tickets', lazy=True)
     travel_schedule_id = db.Column(db.Integer, db.ForeignKey('travel_schedule.id'), nullable=False)
@@ -105,8 +109,9 @@ class Ticket(db.Model):
     # Add any other additional fields you want to store for a ticket
 
     def __repr__(self):
-        return f"Ticket(id={self.id}, user={self.user}, travel_schedule={self.travel_schedule}, " \
-               f"booking_time={self.booking_time}, seat_number={self.seat_number}, price={self.price})"
+        return f"Ticket(id={self.id}, ticket_number={self.ticket_number}, user={self.user}, " \
+               f"travel_schedule={self.travel_schedule}, booking_time={self.booking_time}, " \
+               f"seat_number={self.seat_number}, price={self.price})"
 
 
 
@@ -842,6 +847,17 @@ def checkout(schedule_id):
 
     return render_template('user/checkout.html', schedule=schedule)
 
+# Function to generate a unique random ticket number
+def generate_unique_ticket_number():
+    while True:
+        letters = ''.join(random.choices(string.ascii_uppercase, k=2))
+        digits = ''.join(random.choices(string.digits, k=4))
+        ticket_number = f"{letters}{digits}"
+
+        # Check if the generated ticket number is unique in the Ticket model
+        if not Ticket.query.filter_by(ticket_number=ticket_number).first():
+            return ticket_number
+
 # Route to book a ticket
 @app.route('/book_ticket/<int:schedule_id>', methods=['GET', 'POST'])
 @login_required
@@ -849,56 +865,44 @@ def book_ticket(schedule_id):
     travel_schedule = TravelSchedule.query.get_or_404(schedule_id)
     form = BookTicketForm()
 
-    # Get the list of booked seat numbers from the Ticket model
     booked_seat_numbers = [ticket.seat_number for ticket in travel_schedule.tickets if ticket.seat_number is not None]
-
-    # Exclude seats that are already booked, including None
     available_seats = [seat for seat in range(1, travel_schedule.vehicle.capacity + 1) if seat not in booked_seat_numbers]
-
-    # Set form choices excluding booked seats
     form.seat_number.choices = [(seat, seat) for seat in available_seats]
 
     if request.method == 'POST' and form.validate_on_submit():
-        # Check if the vehicle associated with the travel schedule exists
         if not travel_schedule.vehicle:
             flash('No vehicle assigned to this travel schedule', 'error')
             return redirect(url_for('user_dashboard'))
 
-        # Check if the vehicle has available seats
         if len(travel_schedule.tickets) >= travel_schedule.vehicle.capacity:
             flash('This vehicle has reached its capacity. No available seats for this travel schedule', 'error')
             return redirect(url_for('user_dashboard'))
 
-        # Assign the selected seat number from the form
         selected_seat = int(form.seat_number.data)
 
-        # Check if the selected seat is already booked
         if selected_seat not in available_seats:
             flash('This seat is already booked. Please choose another seat.', 'error')
             return redirect(url_for('book_ticket', schedule_id=schedule_id))
 
-        # Create a new ticket associated with the current user and the selected travel schedule
         new_ticket = Ticket(
             user=current_user,
             travel_schedule=travel_schedule,
             booking_time=datetime.utcnow(),
             seat_number=selected_seat,
-            price=travel_schedule.price  # Use the price from the travel schedule
+            price=travel_schedule.price,
+            ticket_number=generate_unique_ticket_number()  # Use the updated function for unique ticket number
         )
 
         db.session.add(new_ticket)
         db.session.commit()
 
-        # Update the booked seats after creating a new ticket
         booked_seat_numbers.append(selected_seat)
         available_seats = [seat for seat in range(1, travel_schedule.vehicle.capacity + 1) if seat not in booked_seat_numbers]
         form.seat_number.choices = [(seat, seat) for seat in available_seats]
 
         flash('Ticket booked successfully', 'success')
-        # Redirect to the ticket download page with the newly created ticket's ID
         return redirect(url_for('download_ticket', ticket_id=new_ticket.id))
 
-    # Render the form to book a ticket with the list of available seats
     return render_template('user/book_ticket.html', travel_schedule=travel_schedule, form=form, booked_seats=booked_seat_numbers)
 
 # Route to handle ticket download page
