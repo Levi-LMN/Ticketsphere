@@ -828,8 +828,10 @@ def view_all_schedules():
     # Pass all_saccos, all_locations, and all_destinations to the template for the filters
     all_saccos = Sacco.query.all()
 
+    # Pass the function to the template context
     return render_template('user/schedules.html', schedules=schedules, all_saccos=all_saccos,
-                           all_locations=all_locations, all_destinations=all_destinations)
+                           all_locations=all_locations, all_destinations=all_destinations,
+                           schedule_has_available_seats=schedule_has_available_seats)
 
 # route to view vehicles by sacco admin
 @app.route('/view_vehicles', methods=['GET'])
@@ -877,6 +879,7 @@ def generate_unique_ticket_number():
         if not Ticket.query.filter_by(ticket_number=ticket_number).first():
             return ticket_number
 
+
 # Route to book a ticket
 @app.route('/book_ticket/<int:schedule_id>', methods=['GET', 'POST'])
 @login_required
@@ -884,9 +887,14 @@ def book_ticket(schedule_id):
     travel_schedule = TravelSchedule.query.get_or_404(schedule_id)
     form = BookTicketForm()
 
-    booked_seat_numbers = [ticket.seat_number for ticket in travel_schedule.tickets if ticket.seat_number is not None]
-    available_seats = [seat for seat in range(1, travel_schedule.vehicle.capacity + 1) if seat not in booked_seat_numbers]
-    form.seat_number.choices = [(seat, seat) for seat in available_seats]
+    booked_seat_numbers = [str(ticket.seat_number) for ticket in travel_schedule.tickets if
+                           ticket.seat_number is not None]
+
+    # Corrected variable name from available_seats to available_seat_numbers
+    available_seat_numbers = [seat for seat in range(1, travel_schedule.vehicle.capacity + 1) if
+                              str(seat) not in booked_seat_numbers]
+
+    form.seat_number.choices = [(str(seat), str(seat)) for seat in available_seat_numbers]
 
     if request.method == 'POST' and form.validate_on_submit():
         if not travel_schedule.vehicle:
@@ -899,7 +907,8 @@ def book_ticket(schedule_id):
 
         selected_seat = int(form.seat_number.data)
 
-        if selected_seat not in available_seats:
+        # Check if the selected seat is already booked
+        if selected_seat in [int(seat) for seat in booked_seat_numbers]:
             flash('This seat is already booked. Please choose another seat.', 'error')
             return redirect(url_for('book_ticket', schedule_id=schedule_id))
 
@@ -909,20 +918,26 @@ def book_ticket(schedule_id):
             booking_time=datetime.utcnow(),
             seat_number=selected_seat,
             price=travel_schedule.price,
-            ticket_number=generate_unique_ticket_number()  # Use the updated function for unique ticket number
+            ticket_number=generate_unique_ticket_number()  # Use the updated function for a unique ticket number
         )
 
         db.session.add(new_ticket)
         db.session.commit()
 
-        booked_seat_numbers.append(selected_seat)
-        available_seats = [seat for seat in range(1, travel_schedule.vehicle.capacity + 1) if seat not in booked_seat_numbers]
-        form.seat_number.choices = [(seat, seat) for seat in available_seats]
+        booked_seat_numbers.append(str(selected_seat))
+
+        # Corrected variable name from available_seats to available_seat_numbers
+        available_seat_numbers = [seat for seat in range(1, travel_schedule.vehicle.capacity + 1) if
+                                  str(seat) not in booked_seat_numbers]
+        form.seat_number.choices = [(str(seat), str(seat)) for seat in available_seat_numbers]
 
         flash('Ticket booked successfully', 'success')
         return redirect(url_for('download_ticket', ticket_id=new_ticket.id))
 
-    return render_template('user/book_ticket.html', travel_schedule=travel_schedule, form=form, booked_seats=booked_seat_numbers)
+    return render_template('user/book_ticket.html', travel_schedule=travel_schedule, form=form,
+                           booked_seats=booked_seat_numbers, available_seats=available_seat_numbers,
+                           schedule_id=schedule_id)
+
 
 # Route to handle ticket download page
 @app.route('/download_ticket/<int:ticket_id>')
@@ -949,6 +964,16 @@ def user_bookings():
     user_tickets = current_user.booked_tickets()
 
     return render_template('user/user_bookings.html', user_tickets=user_tickets)
+
+# In your Flask application
+def schedule_has_available_seats(schedule):
+    booked_seats = [ticket.seat_number for ticket in schedule.tickets]
+    total_capacity = schedule.vehicle.capacity
+
+    # Check if there are available seats by comparing booked seats with total capacity
+    available_seats = [str(i) for i in range(1, total_capacity + 1) if str(i) not in booked_seats]
+
+    return bool(available_seats)
 
 
 

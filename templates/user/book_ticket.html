@@ -1,58 +1,60 @@
-<!-- user/book_ticket.html -->
 {% extends 'base.html' %}
 
+{% block title %}Book Ticket{% endblock %}
+
 {% block content %}
-  <div class="container mt-5">
-    <div class="row">
-      <div class="col-lg-6">
-        <div class="card">
-          <div class="card-body">
-            <h2 class="card-title mb-4">Book a Ticket</h2>
-            <form method="post" action="{{ url_for('book_ticket', schedule_id=travel_schedule.id) }}">
-              {{ form.csrf_token }}
-              <div class="form-group">
-                <label for="seat_number">Select Seat:</label>
-                {{ form.seat_number(class="form-control", placeholder="Select Seat", required="required") }}
-              </div>
-              {{ form.submit(class="btn btn-primary") }}
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-6">
-<!--        <div class="card">-->
-<!--          <div class="card-body">-->
-<!--            <h5 class="card-title mb-4">Available Seats:</h5>-->
-<!--            <ul class="list-group list-group-flush">-->
-<!--              {% for seat in available_seats %}-->
-<!--                <li class="list-group-item">{{ seat }}</li>-->
-<!--              {% endfor %}-->
-<!--            </ul>-->
-<!--          </div>-->
-<!--        </div>-->
-
-        {% if booked_seats %}
-          <div class="card mt-4">
+    <div class="container mt-5">
+        <div class="card shadow">
             <div class="card-body">
-              <h5 class="card-title mb-4">Booked Seats:</h5>
-              <p class="card-text">{{ booked_seats }}</p>
+                <h1 class="card-title">Book Your Ticket</h1>
+
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="alert alert-danger">
+                            <ul>
+                                {% for message in messages %}
+                                    <li>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Travel Schedule Details:</h5>
+                        <p class="card-text"><strong>Schedule ID:</strong> {{ travel_schedule.id }}</p>
+                        <p class="card-text"><strong>Departure Time:</strong> {{ travel_schedule.departure_time }}</p>
+                        <p class="card-text"><strong>Vehicle Capacity:</strong> {{ travel_schedule.vehicle.capacity }}</p>
+                    </div>
+                </div>
+
+                {% if available_seats %}
+                    <form class="mt-4" method="post" action="{{ url_for('book_ticket', schedule_id=schedule_id) }}">
+                        {{ form.hidden_tag() }}
+
+                        <div class="form-group">
+                            <label for="seat_number">Select Seat Number:</label>
+                            <select class="form-control" id="seat_number" name="seat_number">
+                                {% for choice in form.seat_number.choices %}
+                                    <option value="{{ choice[0] }}">{{ choice[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Book Ticket</button>
+                    </form>
+
+                    <p class="mt-3"><strong>{{ available_seats|length }} seat(s)</strong> available for booking.</p>
+
+                    <p><strong>Booked Seats:</strong> {{ booked_seats }}</p>
+
+                {% else %}
+                    <p class="mt-4 alert alert-warning">No available seats for this travel schedule.</p>
+                {% endif %}
+
+                <p class="mt-4"><a href="{{ url_for('view_all_schedules') }}" class="btn btn-secondary">Back to Schedules</a></p>
             </div>
-          </div>
-        {% endif %}
-
-        <script>
-          var bookedSeats = {{ booked_seats|tojson|safe }};
-          var seatDropdown = document.getElementById("seat_number");
-
-          bookedSeats.forEach(function(bookedSeat) {
-            var optionToRemove = seatDropdown.querySelector('option[value="' + bookedSeat + '"]');
-            if (optionToRemove) {
-              optionToRemove.remove();
-            }
-          });
-        </script>
-      </div>
+        </div>
     </div>
-  </div>
 {% endblock %}

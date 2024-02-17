@@ -65,8 +65,9 @@
                     <tr>
                         <th>Departure Location</th>
                         <th>Destination</th>
-<!--                        <th>Departure Time</th>-->
                         <th>Sacco</th>
+
+                        <!-- Add other table headers as needed -->
                         <th>Details</th>
                     </tr>
                 </thead>
@@ -75,10 +76,16 @@
                         <tr>
                             <td>{{ schedule.departure_location }}</td>
                             <td>{{ schedule.destination }}</td>
-<!--                            <td>{{ schedule.departure_time.strftime('%Y-%m-%d %H:%M') }}</td>-->
                             <td>{{ schedule.vehicle.sacco.name }}</td>
+                            <!-- Add other table data cells as needed -->
                             <td>
-                                <a href="{{ url_for('schedule_details', schedule_id=schedule.id) }}" class="btn btn-info btn-sm">View Details</a>
+                                <a href="{{ url_for('schedule_details', schedule_id=schedule.id) }}" class="btn btn-info btn-sm{% if not schedule_has_available_seats(schedule) %} btn-danger disabled{% endif %}">
+                                    {% if schedule_has_available_seats(schedule) %}
+                                        View Details
+                                    {% else %}
+                                        Schedule Full
+                                    {% endif %}
+                                </a>
                             </td>
                         </tr>
                     {% endfor %}
