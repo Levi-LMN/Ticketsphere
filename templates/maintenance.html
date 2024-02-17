@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Under Maintenance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000;
+            color: #ecf0f1;
+            text-align: center;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #ecf0f1;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #bdc3c7;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        #progressBarContainer {
+            display: none;
+            width: 80%;
+            margin: 20px auto;
+            background-color: #2c3e50;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 20px;
+        }
+
+        #progressBar {
+            width: 0;
+            height: 100%;
+            background-color: #2ecc71;
+            transition: width 0.5s ease-in-out;
+        }
+
+        #messageContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #loader {
+            display: none;
+            margin-top: 20px;
+            font-size: 1.5rem;
+            color: #ecf0f1;
+        }
+
+        #errorContainer {
+            display: none;
+            color: #e74c3c;
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+
+        @media only screen and (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            #progressBarContainer {
+                width: 100%;
+            }
+
+            #loader {
+                font-size: 1.2rem;
+            }
+
+            #errorContainer {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="messageContainer">
+    <h1 id="maintenanceHeader"></h1>
+    <p id="maintenanceMessage"></p>
+    <p id="maintenanceDetails"></p>
+    <div id="progressBarContainer">
+        <div id="progressBar"></div>
+    </div>
+    <div id="loader"><i class="fas fa-spinner fa-spin"></i> Restarting Site...</div>
+    <div id="errorContainer">Error starting site. Please try again later.</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/js/all.min.js"></script>
+<script>
+    var maintenanceData = {
+        header: "Site Under Maintenance",
+        message: "We're currently undergoing maintenance. Please check back soon!",
+        details: "Sorry for the inconvenience. We're working hard to improve our site.",
+        countdownDuration: 10 // Countdown duration in seconds (change to desired value)
+    };
+
+    function typeText(element, text, speed, callback) {
+        var i = 0;
+        function type() {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            } else {
+                // Call the callback function when the typing is complete
+                if (callback) {
+                    callback();
+                }
+            }
+        }
+        type();
+    }
+
+    function startCountdown() {
+        var progressBarContainer = document.getElementById('progressBarContainer');
+        var progressBar = document.getElementById('progressBar');
+        var loader = document.getElementById('loader');
+        var errorContainer = document.getElementById('errorContainer');
+
+        progressBarContainer.style.display = 'block';
+
+        var duration = maintenanceData.countdownDuration;
+        var interval = duration * 1000 / 100; // Update the progress bar every 1% of the duration
+
+        var width = 0;
+        var timer = setInterval(function () {
+            if (width >= 100) {
+                clearInterval(timer);
+                progressBarContainer.style.display = 'none'; // Hide the progress bar
+                loader.style.display = 'block'; // Show the loader
+
+                setTimeout(function () {
+                    loader.style.display = 'none'; // Hide the loader
+                    errorContainer.style.display = 'block'; // Show the error message
+
+                    setTimeout(function () {
+                        // Reset the page and start the maintenance process again
+                        errorContainer.style.display = 'none';
+                        document.getElementById('maintenanceHeader').innerHTML = '';
+                        document.getElementById('maintenanceMessage').innerHTML = '';
+                        document.getElementById('maintenanceDetails').innerHTML = '';
+                        startMaintenance();
+                    }, 3000); // Display the error message for 3 seconds before resetting
+
+                    setTimeout(function () {
+                        // Reload the page after displaying the error for 3 seconds
+                        location.reload();
+                    }, 3000);
+
+                }, 2000); // Show the loader for 2 seconds before displaying the error message
+                return;
+            }
+            width += 1;
+            progressBar.style.width = width + '%';
+        }, interval);
+    }
+
+    function startMaintenance() {
+        typeText(document.getElementById('maintenanceHeader'), maintenanceData.header, 100, function () {
+            typeText(document.getElementById('maintenanceMessage'), maintenanceData.message, 50, function () {
+                typeText(document.getElementById('maintenanceDetails'), maintenanceData.details, 50, startCountdown);
+            });
+        });
+    }
+
+    // Start the maintenance process
+    startMaintenance();
+</script>
+
+</body>
+</html>

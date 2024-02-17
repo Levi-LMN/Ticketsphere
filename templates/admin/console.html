@@ -8,36 +8,44 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container mt-5">
-        <h1 class="text-center">User Management Console</h1>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                    <tr>
-                        <td>{{ user.id }}</td>
-                        <td>{{ user.first_name }}</td>
-                        <td>{{ user.last_name }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>
-                            <form method="post" action="{{ url_for('delete_user', user_id=user.id) }}">
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <button class="btn btn-warning" id="clearPinBtn">End session</button>
+
+
+<!-- "Close down the site" section -->
+<div class="card bg-dark text-white">
+    <div class="card-body">
+        <h1 class="card-title">Maintenance</h1>
+        <p class="card-text">Choose the action below:</p>
+
+        {% if config['SHOW_LOGIN_PAGE'] %}
+            <p class="card-text">The login page is currently visible.</p>
+            <form method="POST" action="/toggle_switch">
+                <button type="submit" class="btn btn-danger btn-lg">Maintain Site</button>
+            </form>
+        {% else %}
+            <p class="card-text">The login page is currently hidden.</p>
+            <form method="POST" action="/toggle_switch">
+                <button type="submit" class="btn btn-success btn-lg">Show Login Page</button>
+            </form>
+        {% endif %}
     </div>
+</div>
+
+<!-- "User Management Console" section -->
+<div class="card border-0 mt-4 shadow">
+    <div class="card-body bg-light">
+        <p class="card-text">Manage users:</p>
+        <a href="{{ url_for('users') }}" class="btn btn-primary btn-lg">All Users</a>
+    </div>
+</div>
+
+<div class="card border-0 mt-4 shadow">
+    <div class="card-body bg-light">
+        <p class="card-text">End the current session:</p>
+        <button id="clearPinBtn" class="btn btn-secondary btn-lg">End Session</button>
+    </div>
+</div>
+
+
 
     <!-- Bootstrap JS and Popper.js CDN (if needed) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -69,6 +77,8 @@
         });
     });
 </script>
+
+
 
 <!-- ... Remaining HTML code ... -->
 

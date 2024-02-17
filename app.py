@@ -28,7 +28,7 @@ from flask import render_template, flash, redirect, url_for, request
 from sqlalchemy import func
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-
+from functools import wraps
 
 # Create the Flask app
 app = Flask(__name__)
@@ -42,6 +42,9 @@ app.config['MAIL_PASSWORD'] = 'qecs yhcc gkeq nlee'
 app.config['MAIL_DEFAULT_SENDER'] = 'retailsysx@gmail.com'
 app.config['MAIL_MAX_EMAILS'] = None
 app.config['MAIL_ASCII_ATTACHMENTS'] = False
+
+# Configuration
+app.config['SHOW_LOGIN_PAGE'] = True  # Set this to True to show login.html, False for coming-soon.html
 
 app.config['SECRET_KEY'] = '@#@$@#'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
@@ -114,13 +117,13 @@ class Ticket(db.Model):
     booking_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     seat_number = db.Column(db.String(20), nullable=True)
     price = db.Column(db.Float, nullable=True)
+
     # Add any other additional fields you want to store for a ticket
 
     def __repr__(self):
         return f"Ticket(id={self.id}, ticket_number={self.ticket_number}, user={self.user}, " \
                f"travel_schedule={self.travel_schedule}, booking_time={self.booking_time}, " \
                f"seat_number={self.seat_number}, price={self.price})"
-
 
 
 # Admin registration form
@@ -211,9 +214,11 @@ class BookTicketForm(FlaskForm):
     seat_number = SelectField('Select Seat', coerce=int)
     submit = SubmitField('Book Ticket')
 
+
 # Create the database tables
 with app.app_context():
     db.create_all()
+
 
 # flask load user
 @login_manager.user_loader
@@ -240,6 +245,23 @@ def force_error():
     result = 1 / 0
     return f"This won't be reached, due to the intentional error above: {result}"
 
+
+def maintenance_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not app.config['SHOW_LOGIN_PAGE']:
+            return render_template('maintenance.html')
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
+@app.route('/toggle_switch', methods=['POST'])
+def toggle_switch():
+    app.config['SHOW_LOGIN_PAGE'] = not app.config['SHOW_LOGIN_PAGE']
+    return redirect('/dev_console')
+
+
 # Under construction pages
 @app.route('/about')
 @app.route('/contact')
@@ -249,9 +271,11 @@ def under_construction():
     clicked_page = request.path[1:].capitalize()  # Extract page name from URL
     return render_template('under_construction.html', clicked_page=clicked_page)
 
+
 # initial home route
 @app.route('/')
 @login_required
+@maintenance_required
 def home():
     if current_user.role == 'user':
         return redirect(url_for('user_dashboard'))
@@ -265,6 +289,7 @@ def home():
         flash('Invalid user role', 'danger')
         return redirect(url_for('logout'))
 
+
 # route to send verification email
 def send_verification_email(user):
     token = user.token
@@ -273,6 +298,7 @@ def send_verification_email(user):
 
     msg = Message(subject, recipients=[user.email], body=body)
     mail.send(msg)
+
 
 # route to verify token
 @app.route('/verify/<token>')
@@ -303,6 +329,7 @@ def verify(token):
         flash('Invalid verification link. Please register again.', 'danger')
         return redirect(url_for('register'))
 
+
 # route to login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -329,6 +356,7 @@ def login():
 
     return render_template('login.html', form=form)
 
+
 # Route to logout
 @app.route('/logout')
 @login_required
@@ -342,9 +370,11 @@ def logout():
     flash('You have been logged out.', 'success')
     return redirect(url_for('home'))
 
+
 # route to user profile
 @app.route('/profile')
 @login_required
+@maintenance_required
 def profile():
     if not current_user.is_verified:
         flash('Your email is not verified. You cannot recover your account until your email is verified.', 'danger')
@@ -354,26 +384,32 @@ def profile():
 # route to user dashboard
 @app.route('/user-dashboard')
 @login_required
+@maintenance_required
 def user_dashboard():
     return render_template('user/user_dashboard.html', user=current_user)
+
 
 # route to sacco admin dashboard
 @app.route('/sacco-admin-dashboard')
 @login_required
+@maintenance_required
 def sacco_admin_dashboard():
     sacco_admin = current_user
 
     # Check if the Sacco admin is assigned to a Sacco
     if sacco_admin.sacco:
         assigned_sacco = sacco_admin.sacco.name
-        return render_template('sacco_admin/sacco_admin_dashboard.html', user=sacco_admin, assigned_sacco=assigned_sacco)
+        return render_template('sacco_admin/sacco_admin_dashboard.html', user=sacco_admin,
+                               assigned_sacco=assigned_sacco)
     else:
         flash('You are not assigned to any Sacco.', 'warning')
         return render_template('sacco_admin/sacco_admin_dashboard.html', user=sacco_admin)
 
+
 # Route for the driver dashboard
 @app.route('/driver_dashboard', methods=['GET', 'POST'])
 @login_required
+@maintenance_required
 def driver_dashboard():
     # Retrieve the driver's assigned vehicle
     driver_vehicle = Vehicle.query.filter_by(driver=current_user).first()
@@ -404,6 +440,7 @@ def driver_dashboard():
 # route to admin dashboard
 @app.route('/admin-dashboard')
 @login_required
+@maintenance_required
 def admin_dashboard():
     return render_template('admin/admin_dashboard.html', user=current_user)
 
@@ -411,6 +448,7 @@ def admin_dashboard():
 # route to user management page
 @app.route('/user-management')
 @login_required
+@maintenance_required
 def user_management():
     if current_user.role == 'admin':
         # Fetch all users from the database
@@ -424,6 +462,7 @@ def user_management():
 # route to change roles
 @app.route('/change-role/<int:user_id>', methods=['GET', 'POST'])
 @login_required
+@maintenance_required
 def change_role(user_id):
     if current_user.role == 'admin':
         user = User.query.get(user_id)
@@ -444,6 +483,7 @@ def change_role(user_id):
     else:
         flash('Access denied. You are not authorized to perform this action.', 'danger')
         return redirect(url_for('home'))
+
 
 # route to register user
 @app.route('/register/user', methods=['GET', 'POST'])
@@ -483,6 +523,7 @@ def register_user():
             return redirect(url_for('register_user'))
 
     return render_template('user/register_user.html', form=form)
+
 
 # route to register driver
 @app.route('/register/driver', methods=['GET', 'POST'])
@@ -524,6 +565,7 @@ def register_driver():
 
     return render_template('driver/register_driver.html', form=form)
 
+
 # route to register sacco admin
 @app.route('/register/sacco_admin', methods=['GET', 'POST'])
 def register_sacco_admin():
@@ -564,6 +606,7 @@ def register_sacco_admin():
 
     return render_template('sacco_admin/register_sacco_admin.html', form=form)
 
+
 # route to register admin
 @app.route('/register/admin', methods=['GET', 'POST'])
 def register_admin():
@@ -603,14 +646,18 @@ def register_admin():
 
     return render_template('admin/register_admin.html', form=form)
 
+
 # route to authentication page
 @app.route('/auth')
+@maintenance_required
 def auth():
     return render_template('auth.html')
+
 
 # route to add sacco
 @app.route('/add_sacco', methods=['GET', 'POST'])
 @login_required
+@maintenance_required
 def add_sacco():
     # Ensure the current user is an admin before allowing them to add a Sacco
     if current_user.role != 'admin':
@@ -639,9 +686,11 @@ def add_sacco():
 
     return render_template('admin/add_sacco.html', form=form)
 
+
 # route to delete sacco
 @app.route('/delete_sacco', methods=['GET', 'POST'])
 @login_required
+@maintenance_required
 def delete_sacco():
     # Ensure the current user is an admin before allowing them to delete Saccos
     if current_user.role != 'admin':
@@ -664,10 +713,10 @@ def delete_sacco():
     return render_template('admin/delete_sacco.html', saccos=saccos, form=form)
 
 
-
 # route to manage saccos
 @app.route('/manage_saccos', methods=['GET', 'POST'])
 @login_required
+@maintenance_required
 def manage_saccos():
     # Ensure the current user is an admin before allowing them to manage Saccos
     if current_user.role != 'admin':
@@ -703,6 +752,7 @@ def manage_saccos():
 # Route to add travel schedules
 @app.route('/add_schedule', methods=['GET', 'POST'])
 @login_required
+@maintenance_required
 def add_schedule():
     if request.method == 'POST':
         departure_location = request.form.get('departure_location')
@@ -742,9 +792,11 @@ def add_schedule():
     sacco_vehicles = current_user.sacco.vehicles
     return render_template('sacco_admin/add_schedule.html', sacco_vehicles=sacco_vehicles)
 
+
 # route to add vehicles by sacco admin
 @app.route('/add_vehicle', methods=['GET', 'POST'])
 @login_required
+@maintenance_required
 def add_vehicle():
     # Ensure the current user is a Sacco admin
     if current_user.role != 'sacco_admin':
@@ -800,6 +852,7 @@ def add_vehicle():
 # Route to view travel schedules for a Sacco admin
 @app.route('/view_schedules')
 @login_required
+@maintenance_required
 def view_schedules():
     sacco = current_user.sacco
 
@@ -814,6 +867,7 @@ def view_schedules():
 # route to view all schedules
 @app.route('/schedules')
 @login_required
+@maintenance_required
 def view_all_schedules():
     # Get unique locations and destinations from the database
     all_locations = set([schedule.departure_location.lower() for schedule in TravelSchedule.query.all()])
@@ -857,6 +911,7 @@ def view_all_schedules():
 # route to view vehicles by sacco admin
 @app.route('/view_vehicles', methods=['GET'])
 @login_required
+@maintenance_required
 def view_vehicles():
     # Ensure the current user is associated with a Sacco
     if not current_user.sacco:
@@ -869,25 +924,27 @@ def view_vehicles():
     return render_template('sacco_admin/view_vehicles.html', vehicles=vehicles)
 
 
-
-
 # route to view details about a specific schedule
 @app.route('/schedule_details/<int:schedule_id>')
 @login_required
+@maintenance_required
 def schedule_details(schedule_id):
     # Fetch the schedule details based on schedule_id
     schedule = TravelSchedule.query.get_or_404(schedule_id)
 
     return render_template('user/schedule_details.html', schedule=schedule)
 
+
 # rote for checkout page with schedule id
 @app.route('/checkout/<int:schedule_id>')
 @login_required
+@maintenance_required
 def checkout(schedule_id):
     # Fetch the schedule details based on schedule_id
     schedule = TravelSchedule.query.get_or_404(schedule_id)
 
     return render_template('user/checkout.html', schedule=schedule)
+
 
 # Function to generate a unique random ticket number
 def generate_unique_ticket_number():
@@ -904,6 +961,7 @@ def generate_unique_ticket_number():
 # Route to book a ticket
 @app.route('/book_ticket/<int:schedule_id>', methods=['GET', 'POST'])
 @login_required
+@maintenance_required
 def book_ticket(schedule_id):
     travel_schedule = TravelSchedule.query.get_or_404(schedule_id)
     form = BookTicketForm()
@@ -963,6 +1021,7 @@ def book_ticket(schedule_id):
 # Route to handle ticket download page
 @app.route('/download_ticket/<int:ticket_id>')
 @login_required
+@maintenance_required
 def download_ticket(ticket_id):
     # Retrieve the ticket from the database
     ticket = Ticket.query.get_or_404(ticket_id)
@@ -977,14 +1036,17 @@ def download_ticket(ticket_id):
     # Render the download_ticket template with the ticket and schedule details
     return render_template('user/download_ticket.html', ticket=ticket, travel_schedule=travel_schedule)
 
+
 # Route for the user's bookings
 @app.route('/user_bookings', methods=['GET'])
 @login_required
+@maintenance_required
 def user_bookings():
     # Retrieve the user's booked tickets
     user_tickets = current_user.booked_tickets()
 
     return render_template('user/user_bookings.html', user_tickets=user_tickets)
+
 
 # In your Flask application
 def schedule_has_available_seats(schedule):
@@ -1006,7 +1068,7 @@ def search():
     search_results = (
         TravelSchedule.query
         .join(Vehicle)  # Assuming there's a relationship between TravelSchedule and Vehicle
-        .join(Sacco)    # Assuming there's a relationship between Vehicle and Sacco
+        .join(Sacco)  # Assuming there's a relationship between Vehicle and Sacco
         .filter(
             (TravelSchedule.departure_location.ilike(f"%{query}%")) |
             (TravelSchedule.destination.ilike(f"%{query}%")) |
@@ -1057,13 +1119,20 @@ def delete_user(user_id):
     user = User.query.get_or_404(user_id)
     db.session.delete(user)
     db.session.commit()
-    return redirect(url_for('display_users'))
+    return redirect(url_for('dev_console'))
+
 
 # Example route for PIN clearance
 @app.route('/clear_pin', methods=['POST'])
 def clear_pin():
     session.pop('authenticated', None)
     return jsonify({'message': 'PIN cleared successfully'}), 200
+
+# route to view all users
+@app.route('/users')
+def users():
+    users = User.query.all()
+    return render_template('admin/users.html', users=users)
 
 
 if __name__ == '__main__':

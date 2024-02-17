@@ -1,58 +1,26 @@
-{% extends 'base.html' %}
-
-{% block content %}
-    <div class="container d-flex align-items-center justify-content-center vh-100">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card border-0 shadow-lg" style="max-width: 45rem;">
-                    <div class="card-header bg-dark text-light text-center py-3">
-                        <h4 class="mb-0">Developer's console</h4>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Hi {{ current_user.first_name }}</h5>
-                        <p class="card-text text-muted">This console is a powerful tool for debugging and optimizing code,It is secured to prevent unauthorized access and protect sensitive information, ensuring the safety and integrity of the application during development and testing.</p>
-                        <button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#pinModal">
-                            <i class="fas fa-code"></i> Enter Developer's Console
-                        </button>
-                        <small class="d-block text-muted text-center mt-2">PIN Required</small>
-                    </div>
-                </div>
-
-
-                <!-- Modal -->
-                <div class="modal fade" id="pinModal" tabindex="-1" role="dialog" aria-labelledby="pinModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h2 class="modal-title text-center" id="pinModalLabel">Enter PIN to Access Dev Console</h2>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                {% if error_message %}
-                                    <div class="alert alert-danger text-center">{{ error_message }}</div>
-                                {% endif %}
-                                <form method="post" action="{{ url_for('dev_console') }}">
-                                    <div class="form-group">
-                                        <label for="pin" class="sr-only">PIN:</label>
-                                        <input type="password" class="form-control mb-3" id="pin" name="pin" placeholder="Enter your PIN" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary btn-block">Submit</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-{% endblock %}
-
-{% block scripts %}
-    <!-- Bootstrap JS and Popper.js CDN (if needed) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Locked Page</title>
+  <script>
+    window.addEventListener('load', function () {
+      // Check if the page is the top-level browsing context
+      if (window === window.top) {
+        // Listen for the 'beforeunload' event to detect when the user tries to open a new tab
+        window.addEventListener('beforeunload', function (event) {
+          // Display a confirmation message (not supported in all browsers)
+          event.returnValue = 'Are you sure you want to leave?';
+        });
+      } else {
+        // If not the top-level context, close the current tab
+        window.close();
+      }
+    });
+  </script>
+</head>
+<body>
+  <p>This is a locked page.</p>
+</body>
+</html>
