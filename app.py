@@ -332,6 +332,7 @@ def verify(token):
 
 # route to login
 @app.route('/login', methods=['GET', 'POST'])
+@maintenance_required
 def login():
     form = UniversalLoginForm()
 
