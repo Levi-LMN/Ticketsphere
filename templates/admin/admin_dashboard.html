@@ -4,19 +4,59 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-    <h1>Welcome, {{ user.first_name }}!</h1>
-    <p>This is the admin dashboard.</p>
-    <a href="{{ url_for('user_management') }}">User Management</a>
-    <br>
-    <a href="{{ url_for('logout') }}">Logout</a>
-    <br>
-    <li><a href="{{ url_for('add_sacco') }}">Add Sacco</a></li>
-<br>
-    <li><a href="{{ url_for('delete_sacco') }}">Delete sacco</a></li>
-    <br>
-    <li><a href="{{ url_for('manage_saccos') }}">Manage Saccos</a></li>
-    <br>
-    <li><a href="{{ url_for('force_error') }}">Force error</a></li>
-    <br>
+    <div class="container mt-5">
+        <div class="jumbotron">
+            <h1 class="display-4">Welcome, {{ user.first_name }}!</h1>
+            <p class="lead">This is the admin dashboard.</p>
+        </div>
 
+        <div class="card border-primary mb-4" data-toggle="modal" data-target="#dashboardModal">
+            <div class="card-body">
+                <h5 class="card-title">Explore More Options</h5>
+                <a href="#" class="btn btn-primary btn-block">Go</a>
+            </div>
+        </div>
+
+        <!-- Modal -->
+<div class="modal fade" id="dashboardModal" tabindex="-1" role="dialog" aria-labelledby="dashboardModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dashboardModalLabel">More Options</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group text-center">
+                    <li class="list-group-item">
+                        <a href="{{ url_for('user_management') }}" class="btn btn-primary btn-block text-decoration-none">User Management</a>
+                    </li>
+<!--                    <li class="list-group-item">-->
+<!--                        <a href="{{ url_for('logout') }}" class="btn btn-primary btn-block text-decoration-none">Logout</a>-->
+<!--                    </li>-->
+                    <li class="list-group-item">
+                        <a href="{{ url_for('add_sacco') }}" class="btn btn-primary btn-block text-decoration-none">Add Sacco</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="{{ url_for('delete_sacco') }}" class="btn btn-primary btn-block text-decoration-none">Delete Sacco</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="{{ url_for('manage_saccos') }}" class="btn btn-primary btn-block text-decoration-none">Manage Saccos</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="{{ url_for('force_error') }}" class="btn btn-primary btn-block text-decoration-none">Force Error</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <!-- Include Bootstrap JS and Popper.js -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UoUChgUC3i5z3fFKRG+6m9PCEf1izVYUKsNrV+WNxKOqSeLoLegwM5ks3IR4Q" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    </div>
 {% endblock %}
