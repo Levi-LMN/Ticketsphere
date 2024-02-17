@@ -339,7 +339,10 @@ def logout():
 @app.route('/profile')
 @login_required
 def profile():
+    if not current_user.is_verified:
+        flash('Your email is not verified. You cannot recover your account until your email is verified.', 'danger')
     return render_template('profile.html', user=current_user)
+
 
 # route to user dashboard
 @app.route('/user-dashboard')
