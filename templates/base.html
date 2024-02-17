@@ -64,8 +64,8 @@
                         </ul>
                     </li>
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control bg-transparent text-white me-2" type="search" placeholder="Search" aria-label="Search">
+                <form class="d-flex" action="{{ url_for('search') }}" method="GET">
+                    <input class="form-control bg-transparent text-white me-2" type="search" name="query" placeholder="Search" aria-label="Search">
                     <button class="btn btn-light" type="submit">Search</button>
                 </form>
             </div>

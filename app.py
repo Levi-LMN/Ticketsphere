@@ -26,6 +26,8 @@ import string
 from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request
 from sqlalchemy import func
+from sqlalchemy import or_
+from fuzzywuzzy import process
 
 # Create the Flask app
 app = Flask(__name__)
@@ -986,6 +988,25 @@ def schedule_has_available_seats(schedule):
     return bool(available_seats)
 
 
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query')
+
+    # Implement your search logic here
+    # Search for schedules based on departure_location, destination, and sacco name
+    search_results = (
+        TravelSchedule.query
+        .join(Vehicle)  # Assuming there's a relationship between TravelSchedule and Vehicle
+        .join(Sacco)    # Assuming there's a relationship between Vehicle and Sacco
+        .filter(
+            (TravelSchedule.departure_location.ilike(f"%{query}%")) |
+            (TravelSchedule.destination.ilike(f"%{query}%")) |
+            (Sacco.name.ilike(f"%{query}%"))
+        )
+        .all()
+    )
+
+    return render_template('user/search_results.html', query=query, results=search_results)
 
 if __name__ == '__main__':
     app.run(debug=True)
