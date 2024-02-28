@@ -337,25 +337,31 @@ def login():
     form = UniversalLoginForm()
 
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        # Convert email input to lowercase and remove spaces
+        email = form.email.data.lower().replace(" ", "")
+        user = User.query.filter(func.lower(func.replace(User.email, ' ', '')) == email).first()
 
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user)
-            flash('Login successful!', 'success')
+        if user:
+            if bcrypt.check_password_hash(user.password, form.password.data):
+                login_user(user)
+                flash('Login successful!', 'success')
 
-            # Determine the role and redirect accordingly
-            if user.role == 'user':
-                return redirect(url_for('user_dashboard'))
-            elif user.role == 'sacco_admin':
-                return redirect(url_for('sacco_admin_dashboard'))
-            elif user.role == 'driver':
-                return redirect(url_for('driver_dashboard'))
-            elif user.role == 'admin':
-                return redirect(url_for('admin_dashboard'))
+                # Determine the role and redirect accordingly
+                if user.role == 'user':
+                    return redirect(url_for('user_dashboard'))
+                elif user.role == 'sacco_admin':
+                    return redirect(url_for('sacco_admin_dashboard'))
+                elif user.role == 'driver':
+                    return redirect(url_for('driver_dashboard'))
+                elif user.role == 'admin':
+                    return redirect(url_for('admin_dashboard'))
+            else:
+                flash('Login unsuccessful. Incorrect password.', 'danger')
         else:
-            flash('Login unsuccessful. Please check your email and password.', 'danger')
+            flash('Login unsuccessful. Account does not exist.', 'danger')
 
     return render_template('login.html', form=form)
+
 
 
 # Route to logout
