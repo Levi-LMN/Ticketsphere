@@ -1,7 +1,7 @@
 <!-- templates/user_dashboard.html -->
 {% extends "base.html" %}
 
-{% block title %}Home - My Flask App{% endblock %}
+{% block title %}Home - Ticketsphere{% endblock %}
 {% block header %}Home{% endblock %}
 {% block styles %}
     <style>
@@ -55,7 +55,7 @@ span > img{
             <h3 class="card-title mb-3">Quick Links</h3>
             <p class="card-text text-muted">Explore quick access links for your convenience.</p>
             <a href="{{ url_for('view_all_schedules') }}" class="btn btn-primary btn-block mb-2">View Travel Schedules</a>
-            <a href="#" class="btn btn-primary btn-block mb-2">Nearby Bus Stops</a>
+            <a href="/parcels" class="btn btn-primary btn-block mb-2">Nearby Bus Stops</a>
             <a href="#explore" class="btn btn-primary btn-block">Explore</a>
         </div>
     </div>
